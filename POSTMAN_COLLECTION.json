@@ -1,0 +1,724 @@
+{
+  "info": {
+    "_postman_id": "wvta-coc-management",
+    "name": "WVTA CoC Management System",
+    "description": "API collection for WVTA Certificate of Conformity Management System\n\nBase URL: http://localhost:8080/api\n\nEndpoints:\n- Type Management (HA100T)\n- Variant Management (HA200T)\n- VAC Fields (HA300T)\n- COC Fields (HA900T)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Type Management",
+      "item": [
+        {
+          "name": "Lookup Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/types/lookup?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&manf=M",
+              "host": ["{{base_url}}", "/types/lookup"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A",
+                  "description": "Vehicle model (1 char)"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1",
+                  "description": "Type code (max 4 chars)"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01",
+                  "description": "Start date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31",
+                  "description": "End date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "manf",
+                  "value": "M",
+                  "description": "Manufacturer (1 char)"
+                }
+              ]
+            },
+            "description": "Read type by composite key (maps READ HATTYP from COBOL)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Type Approval",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"typModel\": \"A\",\n  \"typType\": \"ABC1\",\n  \"typStartDate\": \"2024-01-01\",\n  \"typEndDate\": \"2025-12-31\",\n  \"typManf\": \"M\",\n  \"typApprovalNo\": \"EU2024/001\",\n  \"typApprDate\": \"2024-03-15\",\n  \"typSmallSeries\": \"Y\",\n  \"userId\": \"USER001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/types/A/ABC1/2024-01-01/2025-12-31/M/approval",
+              "host": ["{{base_url}}", "/types"],
+              "path": [
+                "A",
+                "ABC1",
+                "2024-01-01",
+                "2025-12-31",
+                "M",
+                "approval"
+              ]
+            },
+            "description": "Update type approval number, date, and small series indicator (maps HA100T-UPDATE-APPROVAL-NO)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Variant Management",
+      "item": [
+        {
+          "name": "Lookup Variant",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/variants/lookup?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&variant=VAR001&manf=M",
+              "host": ["{{base_url}}", "/variants/lookup"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A",
+                  "description": "Vehicle model (1 char)"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1",
+                  "description": "Type code (max 4 chars)"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01",
+                  "description": "Start date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31",
+                  "description": "End date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "variant",
+                  "value": "VAR001",
+                  "description": "Variant code (max 6 chars)"
+                },
+                {
+                  "key": "manf",
+                  "value": "M",
+                  "description": "Manufacturer (1 char)"
+                }
+              ]
+            },
+            "description": "Read variant by composite key (maps READ HATVAR from COBOL)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Variant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"varModel\": \"A\",\n  \"varType\": \"ABC1\",\n  \"varStartDate\": \"2024-01-01\",\n  \"varEndDate\": \"2025-12-31\",\n  \"varVariant\": \"VAR001\",\n  \"varManf\": \"M\",\n  \"varEngine\": \"2.0L-DIESEL\",\n  \"varAxlesCocVal\": \"2,LongitudinalALL,Mechanical\",\n  \"varCocAnnex\": \"EU2023-670\",\n  \"varChipData\": \"N\",\n  \"varGenTyrList\": \"Y\",\n  \"varNewmodActmasInd\": \"Y\",\n  \"userId\": \"USER001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/variants/A/ABC1/2024-01-01/2025-12-31/VAR001/M",
+              "host": ["{{base_url}}", "/variants"],
+              "path": [
+                "A",
+                "ABC1",
+                "2024-01-01",
+                "2025-12-31",
+                "VAR001",
+                "M"
+              ]
+            },
+            "description": "Update variant engine, axles, and CoC content (maps HA200T-UPDATE-POWERED-AXLE)"
+          },
+          "response": []
+        },
+        {
+          "name": "Validate Powered Axles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/variants/validate-powered-axles?poweredAxles=2&position=LongitudinalALL&interconnection=Mechanical",
+              "host": ["{{base_url}}", "/variants/validate-powered-axles"],
+              "query": [
+                {
+                  "key": "poweredAxles",
+                  "value": "2",
+                  "description": "Number of powered axles"
+                },
+                {
+                  "key": "position",
+                  "value": "LongitudinalALL",
+                  "description": "Position configuration (optional)"
+                },
+                {
+                  "key": "interconnection",
+                  "value": "Mechanical",
+                  "description": "Interconnection type (optional)"
+                }
+              ]
+            },
+            "description": "Validate powered axles requirement - if powered axles provided, position and interconnection are required"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "VAC Fields Management",
+      "item": [
+        {
+          "name": "Update VAC Field - Axle/Wheel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vac/update-field?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&variant=VAR001&manf=M&fieldNo=1&subField=1&value=2&userId=USER001",
+              "host": ["{{base_url}}", "/vac/update-field"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31"
+                },
+                {
+                  "key": "variant",
+                  "value": "VAR001"
+                },
+                {
+                  "key": "manf",
+                  "value": "M"
+                },
+                {
+                  "key": "fieldNo",
+                  "value": "1",
+                  "description": "Field 1 = Axles/Wheels"
+                },
+                {
+                  "key": "subField",
+                  "value": "1"
+                },
+                {
+                  "key": "value",
+                  "value": "2",
+                  "description": "Number of axles/wheels"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER001"
+                }
+              ]
+            },
+            "description": "Update VAC field 1 (Axles/Wheels) subfiled 1"
+          },
+          "response": []
+        },
+        {
+          "name": "Update VAC Field - Wheelbase",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vac/update-field?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&variant=VAR001&manf=M&fieldNo=3&subField=1&value=2850&userId=USER001",
+              "host": ["{{base_url}}", "/vac/update-field"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31"
+                },
+                {
+                  "key": "variant",
+                  "value": "VAR001"
+                },
+                {
+                  "key": "manf",
+                  "value": "M"
+                },
+                {
+                  "key": "fieldNo",
+                  "value": "3",
+                  "description": "Field 3 = Wheelbase"
+                },
+                {
+                  "key": "subField",
+                  "value": "1"
+                },
+                {
+                  "key": "value",
+                  "value": "2850",
+                  "description": "Wheelbase in mm"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER001"
+                }
+              ]
+            },
+            "description": "Update VAC field 3 (Wheelbase)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update VAC Field - Vehicle Length",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vac/update-field?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&variant=VAR001&manf=M&fieldNo=5&subField=1&value=4800&userId=USER001",
+              "host": ["{{base_url}}", "/vac/update-field"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31"
+                },
+                {
+                  "key": "variant",
+                  "value": "VAR001"
+                },
+                {
+                  "key": "manf",
+                  "value": "M"
+                },
+                {
+                  "key": "fieldNo",
+                  "value": "5",
+                  "description": "Field 5 = Length"
+                },
+                {
+                  "key": "subField",
+                  "value": "1"
+                },
+                {
+                  "key": "value",
+                  "value": "4800",
+                  "description": "Length in mm"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER001"
+                }
+              ]
+            },
+            "description": "Update VAC field 5 (Vehicle Length)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update VAC Field - Vehicle Width",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vac/update-field?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&variant=VAR001&manf=M&fieldNo=6&subField=1&value=1900&userId=USER001",
+              "host": ["{{base_url}}", "/vac/update-field"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31"
+                },
+                {
+                  "key": "variant",
+                  "value": "VAR001"
+                },
+                {
+                  "key": "manf",
+                  "value": "M"
+                },
+                {
+                  "key": "fieldNo",
+                  "value": "6",
+                  "description": "Field 6 = Width"
+                },
+                {
+                  "key": "subField",
+                  "value": "1"
+                },
+                {
+                  "key": "value",
+                  "value": "1900",
+                  "description": "Width in mm"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER001"
+                }
+              ]
+            },
+            "description": "Update VAC field 6 (Vehicle Width)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update VAC Field - Vehicle Height",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vac/update-field?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&variant=VAR001&manf=M&fieldNo=7&subField=1&value=1650&userId=USER001",
+              "host": ["{{base_url}}", "/vac/update-field"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31"
+                },
+                {
+                  "key": "variant",
+                  "value": "VAR001"
+                },
+                {
+                  "key": "manf",
+                  "value": "M"
+                },
+                {
+                  "key": "fieldNo",
+                  "value": "7",
+                  "description": "Field 7 = Height"
+                },
+                {
+                  "key": "subField",
+                  "value": "1"
+                },
+                {
+                  "key": "value",
+                  "value": "1650",
+                  "description": "Height in mm"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER001"
+                }
+              ]
+            },
+            "description": "Update VAC field 7 (Vehicle Height)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "COC Fields Management",
+      "item": [
+        {
+          "name": "Update COC Field - Engine Power",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coc/update-field?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&manf=M&fieldNo=P.1&subField=1&country=DE&value=180&userId=USER001",
+              "host": ["{{base_url}}", "/coc/update-field"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31"
+                },
+                {
+                  "key": "manf",
+                  "value": "M"
+                },
+                {
+                  "key": "fieldNo",
+                  "value": "P.1",
+                  "description": "Field P.1 = Max Engine Power"
+                },
+                {
+                  "key": "subField",
+                  "value": "1"
+                },
+                {
+                  "key": "country",
+                  "value": "DE",
+                  "description": "Country code"
+                },
+                {
+                  "key": "value",
+                  "value": "180",
+                  "description": "Max engine power in kW"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER001"
+                }
+              ]
+            },
+            "description": "Update COC field P.1 (Maximum Engine Power) for Germany"
+          },
+          "response": []
+        },
+        {
+          "name": "Update COC Field - Fuel Type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coc/update-field?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&manf=M&fieldNo=P.2&subField=1&country=DE&value=Diesel&userId=USER001",
+              "host": ["{{base_url}}", "/coc/update-field"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31"
+                },
+                {
+                  "key": "manf",
+                  "value": "M"
+                },
+                {
+                  "key": "fieldNo",
+                  "value": "P.2",
+                  "description": "Field P.2 = Fuel Type"
+                },
+                {
+                  "key": "subField",
+                  "value": "1"
+                },
+                {
+                  "key": "country",
+                  "value": "DE",
+                  "description": "Country code"
+                },
+                {
+                  "key": "value",
+                  "value": "Diesel"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER001"
+                }
+              ]
+            },
+            "description": "Update COC field P.2 (Fuel Type)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update COC Field - Engine Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coc/update-field?model=A&type=ABC1&startDate=2024-01-01&endDate=2025-12-31&manf=M&fieldNo=P.3&subField=1&country=DE&value=TDI2024&userId=USER001",
+              "host": ["{{base_url}}", "/coc/update-field"],
+              "query": [
+                {
+                  "key": "model",
+                  "value": "A"
+                },
+                {
+                  "key": "type",
+                  "value": "ABC1"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31"
+                },
+                {
+                  "key": "manf",
+                  "value": "M"
+                },
+                {
+                  "key": "fieldNo",
+                  "value": "P.3",
+                  "description": "Field P.3 = Engine Code"
+                },
+                {
+                  "key": "subField",
+                  "value": "1"
+                },
+                {
+                  "key": "country",
+                  "value": "DE",
+                  "description": "Country code"
+                },
+                {
+                  "key": "value",
+                  "value": "TDI2024"
+                },
+                {
+                  "key": "userId",
+                  "value": "USER001"
+                }
+              ]
+            },
+            "description": "Update COC field P.3 (Engine Code)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    }
+  ]
+}
