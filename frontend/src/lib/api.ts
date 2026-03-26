@@ -3,7 +3,7 @@
  * Handles all backend API calls for type and variant management
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api';
 
 interface TypeRequestBody {
   typModel: string;
@@ -18,19 +18,171 @@ interface TypeRequestBody {
 }
 
 interface VariantRequestBody {
+  // Variant Identification
   varModel: string;
   varType: string;
   varStartDate: string;
   varEndDate: string;
   varVariant: string;
   varManf: string;
+  
+  // Engine & Transmission
   varEngine?: string;
+  varCocMaxPower?: string;
+  varCocFuel?: string;
+  varCocCap?: string;
+  varCocNoArrCyl?: string;
+  varCocDirectInj?: string;
+  varCocWrkPrin?: string;
+  varCocEngCode?: string;
+  varCocEngMan?: string;
+  
+  // Axles Configuration
   varAxlesCocVal?: string;
+  
+  // Vehicle Dimensions & Configuration (VAC Fields)
+  axleWheelField1_1?: string;
+  axleWheelField1_2?: string;
+  lengthField3?: string;
+  widthField4?: string;
+  heightField5_1?: string;
+  heightField5_2?: string;
+  rearOverhangField6?: string;
+  trackAxleField7?: string;
+  typeBodyField8?: string;
+  classVehicleField30?: string;
+  doorsField30_1?: string;
+  doorsField31?: string;
+  tireField38?: string;
+  
+  // Approval & Flags
   varCocAnnex?: string;
   varChipData?: string;
   varGenTyrList?: string;
   varNewmodActmasInd?: string;
+  
+  // System
   userId: string;
+}
+
+// ===== UNIFIED CoCA FORM INTERFACES =====
+// Request/Response structures for unified HA003U form
+interface UnifiedCoCARequest {
+  // ===== READ-ONLY DISPLAY FIELDS =====
+  type?: string;
+  variant?: string;
+  typeDescription?: string;
+  engine?: string;
+
+  // ===== TYPE IDENTIFICATION =====
+  startDate?: string;
+  endDate?: string;
+  manufacturer?: string;
+  chipData?: 'Y' | 'N';
+
+  // ===== TYPE APPROVAL FIELDS =====
+  approvalNo?: string;
+  approvalDay?: number;
+  approvalMonth?: number;
+  approvalYear?: number;
+  smallSeriesTypApp?: 'Y' | 'N' | '/';
+  newModelActmass?: 'Y' | 'N';
+
+  // ===== TEST METHOD =====
+  testMethod?: string;
+
+  // ===== AXLES CONFIGURATION =====
+  axlesWheels?: string;
+  wheelbase?: string;
+  posAxlesWithTwinWheels?: string;
+  steeredAxles?: string;
+  poweredAxles?: string;
+
+  // ===== POSITION & INTERCONNECTION =====
+  position?: string;
+  interconnection?: string;
+
+  // ===== DIMENSIONS =====
+  length?: string;
+  lengthWithTowbar?: string;
+  width?: string;
+  height?: string;
+  rearOverhang?: string;
+  track?: string;
+
+  // ===== BODY CLASSIFICATION =====
+  typeOfBody?: string;
+  classOfVehicle?: string;
+  noConfDoors?: string;
+  tyreValue?: string;
+
+  // ===== SYSTEM FIELDS =====
+  userId?: string;
+  pageNo?: string;
+}
+
+interface FieldError {
+  fieldName: string;
+  errorMessage: string;
+  rejectedValue?: string;
+}
+
+interface UnifiedCoCAResponse {
+  // ===== READ-ONLY DISPLAY FIELDS =====
+  type?: string;
+  variant?: string;
+  typeDescription?: string;
+  engine?: string;
+
+  // ===== TYPE IDENTIFICATION =====
+  startDate?: string;
+  endDate?: string;
+  manufacturer?: string;
+  chipData?: 'Y' | 'N';
+
+  // ===== TYPE APPROVAL FIELDS =====
+  approvalNo?: string;
+  approvalDay?: number;
+  approvalMonth?: number;
+  approvalYear?: number;
+  smallSeriesTypApp?: 'Y' | 'N' | '/';
+  newModelActmass?: 'Y' | 'N';
+
+  // ===== TEST METHOD =====
+  testMethod?: string;
+
+  // ===== AXLES CONFIGURATION =====
+  axlesWheels?: string;
+  wheelbase?: string;
+  posAxlesWithTwinWheels?: string;
+  steeredAxles?: string;
+  poweredAxles?: string;
+
+  // ===== POSITION & INTERCONNECTION =====
+  position?: string;
+  interconnection?: string;
+
+  // ===== DIMENSIONS =====
+  length?: string;
+  lengthWithTowbar?: string;
+  width?: string;
+  height?: string;
+  rearOverhang?: string;
+  track?: string;
+
+  // ===== BODY CLASSIFICATION =====
+  typeOfBody?: string;
+  classOfVehicle?: string;
+  noConfDoors?: string;
+  tyreValue?: string;
+
+  // ===== SYSTEM FIELDS =====
+  userId?: string;
+  pageNo?: string;
+
+  // ===== VALIDATION RESULT =====
+  valid: boolean;
+  errors?: FieldError[];
 }
 
 const handleResponse = async (response: Response) => {
@@ -242,7 +394,126 @@ const apiClient = {
 
     return handleResponse(response);
   },
+
+  // ===== UNIFIED CoCA FORM (HA003U) ENDPOINTS =====
+
+  /**
+   * Lookup variant for unified form (HA003U - READ)
+   * GET /api/coc/variants?model=A&type=LE&startDate=2024-01-01&endDate=2024-12-31&variant=NHFECO&manf=L
+   */
+  lookupUnifiedVariant: async (
+    model: string,
+    type: string,
+    startDate: string,
+    endDate: string,
+    variant: string,
+    manf: string
+  ): Promise<UnifiedCoCAResponse> => {
+    const params = new URLSearchParams({
+      model,
+      type,
+      startDate,
+      endDate,
+      variant,
+      manf,
+    });
+
+    const response = await fetch(
+      `${API_BASE_URL}/coc/variants?${params.toString()}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return handleResponse(response);
+  },
+
+  /**
+   * Validate unified form fields without saving (HA003U - VALIDATE)
+   * POST /api/coc/validate
+   */
+  validateUnifiedVariant: async (
+    data: UnifiedCoCARequest
+  ): Promise<{ valid: boolean; errors?: FieldError[]; message?: string }> => {
+    const response = await fetch(`${API_BASE_URL}/coc/validate`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    return handleResponse(response);
+  },
+
+  /**
+   * Update unified form data (HA003U - UPDATE)
+   * PUT /api/coc/variants?model=A&type=LE&startDate=2024-01-01&endDate=2024-12-31&variant=NHFECO&manf=L
+   */
+  updateUnifiedVariant: async (
+    model: string,
+    type: string,
+    startDate: string,
+    endDate: string,
+    variant: string,
+    manf: string,
+    data: UnifiedCoCARequest
+  ): Promise<UnifiedCoCAResponse> => {
+    const params = new URLSearchParams({
+      model,
+      type,
+      startDate,
+      endDate,
+      variant,
+      manf,
+    });
+
+    const response = await fetch(
+      `${API_BASE_URL}/coc/variants?${params.toString()}`,
+      {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    return handleResponse(response);
+  },
+
+  /**
+   * Health check for unified CoCA service
+   * GET /api/coc/health
+   */
+  checkUnifiedServiceHealth: async (): Promise<{
+    status: string;
+    module: string;
+    screen: string;
+  }> => {
+    const response = await fetch(`${API_BASE_URL}/coc/health`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return handleResponse(response);
+  },
 };
 
 export { apiClient };
-export type { TypeRequestBody, VariantRequestBody };
+export type {
+  TypeRequestBody,
+  VariantRequestBody,
+  UnifiedCoCARequest,
+  UnifiedCoCAResponse,
+  FieldError,
+};

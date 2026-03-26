@@ -17,10 +17,10 @@ export const TypeFormSchema = z.object({
     .max(4, 'Type must be max 4 characters'),
   
   typStartDate: z.string()
-    .refine((date) => !isNaN(Date.parse(date)), 'Invalid start date'),
+    .refine((date: string) => !isNaN(Date.parse(date)), 'Invalid start date'),
   
   typEndDate: z.string()
-    .refine((date) => !isNaN(Date.parse(date)), 'Invalid end date'),
+    .refine((date: string) => !isNaN(Date.parse(date)), 'Invalid end date'),
   
   typManf: z.string()
     .min(1, 'Manufacturer is required')
@@ -39,9 +39,9 @@ export const TypeFormSchema = z.object({
 
 export type TypeFormData = z.infer<typeof TypeFormSchema>;
 
-// Variant Form Schema
+// Variant Form Schema - Comprehensive with all VAC fields
 export const VariantFormSchema = z.object({
-  // Variant Identification
+  // ===== VARIANT IDENTIFICATION =====
   varModel: z.string()
     .min(1, 'Model is required')
     .max(1, 'Model must be 1 character'),
@@ -51,10 +51,10 @@ export const VariantFormSchema = z.object({
     .max(4, 'Type must be max 4 characters'),
   
   varStartDate: z.string()
-    .refine((date) => !isNaN(Date.parse(date)), 'Invalid start date'),
+    .refine((date: string) => !isNaN(Date.parse(date)), 'Invalid start date'),
   
   varEndDate: z.string()
-    .refine((date) => !isNaN(Date.parse(date)), 'Invalid end date'),
+    .refine((date: string) => !isNaN(Date.parse(date)), 'Invalid end date'),
   
   varVariant: z.string()
     .min(1, 'Variant is required')
@@ -64,42 +64,142 @@ export const VariantFormSchema = z.object({
     .min(1, 'Manufacturer is required')
     .max(1, 'Manufacturer must be 1 character'),
   
-  // Engine and Testing
+  // ===== ENGINE & TRANSMISSION =====
   varEngine: z.string().max(12, 'Engine code max 12 characters').optional(),
-  testMethod: z.string().max(25, 'Test method max 25 characters').optional(),
+  varCocMaxPower: z.string().max(20, 'Max power max 20 characters').optional(),
+  varCocFuel: z.string().max(10, 'Fuel type max 10 characters').optional(),
+  varCocCap: z.string().max(10, 'Engine capacity max 10 characters').optional(),
+  varCocNoArrCyl: z.string().max(5, 'No. of cylinders max 5 characters').optional(),
+  varCocDirectInj: z.string().max(5, 'Direct injection max 5 characters').optional(),
+  varCocWrkPrin: z.string().max(40, 'Working principle max 40 characters').optional(),
+  varCocEngCode: z.string().max(10, 'Engine code max 10 characters').optional(),
+  varCocEngMan: z.string().max(25, 'Engine manufacturer max 25 characters').optional(),
   
-  // Approval
-  smallSeriesTypApp: z.string().max(1, 'Small series max 1 character').optional(),
+  // ===== AXLES & CONFIGURATION =====
+  varAxlesCocVal: z.string().max(50, 'Axles config max 50 characters').optional(),
+  
+  // ===== VEHICLE DIMENSIONS & CONFIGURATION (VAC Fields) =====
+  // Field 1: Axles/Wheels Configuration
+  axleWheelField1_1: z.string().max(12, 'Axle/wheel (1) max 12 characters').optional(),
+  axleWheelField1_2: z.string().max(10, 'Axle/wheel (2) max 10 characters').optional(),
+  
+  // Field 3: Length
+  lengthField3: z.string().max(10, 'Length max 10 characters').optional(),
+  
+  // Field 4: Width
+  widthField4: z.string().max(10, 'Width max 10 characters').optional(),
+  
+  // Field 5: Height
+  heightField5_1: z.string().max(10, 'Height (max) max 10 characters').optional(),
+  heightField5_2: z.string().max(10, 'Height (min) max 10 characters').optional(),
+  
+  // Field 6: Rear Overhang
+  rearOverhangField6: z.string().max(10, 'Rear overhang max 10 characters').optional(),
+  
+  // Field 7: Track - Axle
+  trackAxleField7: z.string().max(20, 'Track-Axle max 20 characters').optional(),
+  
+  // Field 8: Type of Body
+  typeBodyField8: z.string().max(25, 'Type of body max 25 characters').optional(),
+  
+  // Field 30: Class of Vehicle
+  classVehicleField30: z.string().max(10, 'Class of vehicle max 10 characters').optional(),
+  
+  // Field 30.1: No and Conf. of Doors
+  doorsField30_1: z.string().max(50, 'Doors config max 50 characters').optional(),
+  
+  // Field 31: Doors Configuration
+  doorsField31: z.string().max(10, 'Doors max 10 characters').optional(),
+  
+  // Field 38: Tire Specifications
+  tireField38: z.string().max(50, 'Tire specs max 50 characters').optional(),
+  
+  // ===== APPROVAL & FLAGS =====
+  varCocAnnex: z.string().max(25, 'Test method max 25 characters').optional(),
+  varChipData: z.string().max(1, 'Chip data max 1 character').optional(),
+  varGenTyrList: z.string().max(1, 'Gen tyre list max 1 character').optional(),
   varNewmodActmasInd: z.string().max(1, 'ACTMASS ind max 1 character').optional(),
   
-  // Powered Axles
-  axleWheel: z.string().max(12, 'Axle/wheel max 12 characters').optional(),
-  position: z.string().max(21, 'Position max 21 characters').optional(),
-  interconnection: z.string().max(40, 'Interconnection max 40 characters').optional(),
-  posWheel: z.string().optional(),
-  steerAxle: z.string().optional(),
-  
-  // Dimensions
-  wheelbase: z.string().optional(),
-  track: z.string().optional(),
-  length: z.string().optional(),
-  lengthWithTowbar: z.string().optional(),
-  width: z.string().optional(),
-  height: z.string().optional(),
-  overhang: z.string().optional(),
-  
-  // Classification
-  typeOfBody: z.string().max(25, 'Type of body max 25 characters').optional(),
-  classOfVehicle: z.string().max(3, 'Class max 3 characters').optional(),
-  noOfDoors: z.string().max(50, 'Doors max 50 characters').optional(),
-  
-  // Flags
-  varGenTyrList: z.string().max(1, 'Gen tyre list max 1 character').optional(),
-  
-  // System
+  // ===== SYSTEM =====
   userId: z.string()
     .min(1, 'User ID is required')
     .max(8, 'User ID max 8 characters'),
 });
 
 export type VariantFormData = z.infer<typeof VariantFormSchema>;
+
+// ===== UNIFIED CoCA FORM SCHEMA =====
+// Single unified form combining Type Approval and Variant Management fields
+// Based on COBOL HA003U screen structure with comprehensive validations
+// All validations extracted from HA003U.txt COBOL source
+export const UnifiedFormSchema = z.object({
+  // ===== READ-ONLY DISPLAY FIELDS =====
+  type: z.string().max(4, 'Type max 4 characters').optional(),
+  variant: z.string().max(6, 'Variant max 6 characters').optional(),
+  typeDescription: z.string().max(28, 'Type description max 28 characters').optional(),
+  engine: z.string().max(12, 'Engine max 12 characters').optional(),
+
+  // ===== TYPE IDENTIFICATION =====
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  manufacturer: z.string().max(1, 'Manufacturer max 1 character').optional(),
+  chipData: z.enum(['Y', 'N']).default('N').optional(),
+
+  // ===== TYPE APPROVAL FIELDS =====
+  approvalNo: z.string().max(25, 'Approval No max 25 characters').optional(),
+  approvalDay: z.coerce.number().min(1, 'Day must be 01-31').max(31, 'Day must be 01-31').optional().or(z.literal(null)),
+  approvalMonth: z.coerce.number().min(1, 'Month must be 01-12').max(12, 'Month must be 01-12').optional().or(z.literal(null)),
+  approvalYear: z.coerce.number().min(1, 'Year must be 0001-9999').max(9999, 'Year must be 0001-9999').optional().or(z.literal(null)),
+  smallSeriesTypApp: z.enum(['Y', 'N', '/']).optional(),
+  newModelActmass: z.enum(['Y', 'N']).optional(),
+
+  // ===== TEST METHOD =====
+  testMethod: z.string().max(25, 'Test method max 25 characters').optional(),
+
+  // ===== AXLES CONFIGURATION =====
+  axlesWheels: z.string().max(3, 'Axles/Wheels max 3 characters').optional(),
+  wheelbase: z.string().max(9, 'Wheelbase max 9 characters').optional(),
+  posAxlesWithTwinWheels: z.string().max(3, 'Twin wheels pos max 3 characters').optional(),
+  steeredAxles: z.string().max(3, 'Steered axles max 3 characters').optional(),
+  poweredAxles: z.string()
+    .max(1, 'Powered axles max 1 character')
+    .refine((val) => !val || /^[HN]$/.test(val), 'Powered Axles must be H or N')
+    .optional(),
+  
+  // ===== POSITION & INTERCONNECTION - No commas validation =====
+  position: z.string()
+    .max(21, 'Position max 21 characters')
+    .refine((val) => !val || !val.includes(','), 'Position must not contain commas')
+    .optional(),
+  
+  interconnection: z.string()
+    .max(40, 'Interconnection max 40 characters')
+    .refine((val) => !val || !val.includes(','), 'Interconnection must not contain commas')
+    .optional(),
+
+  // ===== DIMENSIONS =====
+  length: z.string().max(9, 'Length max 9 characters').optional(),
+  lengthWithTowbar: z.string().max(9, 'Length with towbar max 9 characters').optional(),
+  width: z.string().max(9, 'Width max 9 characters').optional(),
+  height: z.string().max(9, 'Height max 9 characters').optional(),
+  rearOverhang: z.string().max(9, 'Rear overhang max 9 characters').optional(),
+  
+  track: z.string()
+    .max(32, 'Track max 32 characters')
+    .optional(),
+  
+  // ===== BODY CLASSIFICATION =====
+  typeOfBody: z.string().max(25, 'Type of body max 25 characters').optional(),
+  classOfVehicle: z.string()
+    .max(3, 'Class of vehicle max 3 characters')
+    .refine((val) => !val || /^(I|II|III|IV|A|B|C)$/.test(val), 'Class must be I, II, III, IV, A, B, or C')
+    .optional(),
+  noConfDoors: z.string().max(50, 'No and conf of doors max 50 characters').optional(),
+  tyreValue: z.string().max(1, 'Tyre value max 1 character').optional(),
+
+  // ===== SYSTEM FIELDS =====
+  userId: z.string().max(8, 'User ID max 8 characters').optional().default('USER001'),
+  pageNo: z.string().optional().default('01'),
+});
+
+export type UnifiedFormData = z.infer<typeof UnifiedFormSchema>;

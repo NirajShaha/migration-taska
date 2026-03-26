@@ -1,18 +1,12 @@
 package com.automotive.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.util.List;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ValidationResult {
-    private boolean valid;
-    private String fieldName;
-    private String errorMessage;
-    private Object value;
-}
+/**
+ * DEPRECATED: This file should be deleted.
+ * 
+ * ValidationResult is defined as a static inner class in CoCFieldValidator.
+ * The service layer uses CoCFieldValidator.ValidationResult for field validation.
+ * 
+ * Use: com.automotive.validator.CoCFieldValidator.ValidationResult
+ * 
+ * Response errors are handled via UnifiedCoCAResponse.FieldError instead.
+ */

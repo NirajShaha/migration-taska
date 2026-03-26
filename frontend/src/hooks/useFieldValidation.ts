@@ -61,8 +61,9 @@ export const useFieldValidation = () => {
 
   const validateAxleWheel = useCallback((value: string): boolean => {
     if (!value || value.trim() === '') return true;
-    if (!/^\d[A-Z0-9]\d$/.test(value)) {
-      setErrors(prev => ({ ...prev, axleWheel: 'Axle/Wheel format must be: digit-alphanumeric-digit' }));
+    // Allow single digit (1-9) or NTN format (digit-alphanumeric-digit)
+    if (!/^(\d|\d[A-Z0-9]\d)$/.test(value)) {
+      setErrors(prev => ({ ...prev, axleWheel: 'Axle/Wheel format must be: digit or digit-alphanumeric-digit' }));
       return false;
     }
     setErrors(prev => {

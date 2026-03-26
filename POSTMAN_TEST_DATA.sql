@@ -69,7 +69,7 @@ INSERT INTO hat_vac_variant (
 ) VALUES
 -- Variant A, ABC1, VAR001 - Dimensions and configuration
 ('A', 'ABC1', '2024-01-01', '2025-12-31', 'VAR001', 'M',
- '1', '1', '2', 'USER001', NOW()),
+ '1', '1', '2A1', 'USER001', NOW()),
 ('A', 'ABC1', '2024-01-01', '2025-12-31', 'VAR001', 'M',
  '3', '1', '2850', 'USER001', NOW()),
 ('A', 'ABC1', '2024-01-01', '2025-12-31', 'VAR001', 'M',
@@ -93,7 +93,7 @@ INSERT INTO hat_vac_variant (
 
 -- Variant B, SUV1, SUV01 - Dimensions and configuration
 ('B', 'SUV1', '2024-01-01', '2025-12-31', 'SUV01', 'M',
- '1', '1', '4', 'USER002', NOW()),
+ '1', '1', '4B2', 'USER002', NOW()),
 ('B', 'SUV1', '2024-01-01', '2025-12-31', 'SUV01', 'M',
  '3', '1', '3100', 'USER002', NOW()),
 ('B', 'SUV1', '2024-01-01', '2025-12-31', 'SUV01', 'M',
@@ -109,7 +109,7 @@ INSERT INTO hat_vac_variant (
 
 -- Variant C, VAN1, VAN001 - Dimensions and configuration
 ('C', 'VAN1', '2023-06-01', '2025-12-31', 'VAN001', 'T',
- '1', '1', '2', 'USER002', NOW()),
+ '1', '1', '2C1', 'USER002', NOW()),
 ('C', 'VAN1', '2023-06-01', '2025-12-31', 'VAN001', 'T',
  '3', '1', '2800', 'USER002', NOW()),
 ('C', 'VAN1', '2023-06-01', '2025-12-31', 'VAN001', 'T',
