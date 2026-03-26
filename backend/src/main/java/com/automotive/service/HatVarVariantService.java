@@ -23,6 +23,7 @@ public class HatVarVariantService {
 
     /**
      * Read variant by composite key (maps READ HATVAR in COBOL)
+     * Fetches both HAT_VAR_VARIANT and HAT_VAC_VARIANT data
      */
     public VariantResponse readVariant(String model, String type, java.time.LocalDate startDate, 
                                        java.time.LocalDate endDate, String variant, String manf) {
@@ -34,7 +35,11 @@ public class HatVarVariantService {
         }
 
         HatVarVariant entity = optional.get();
-        return mapToResponse(entity);
+        
+        // Fetch VAC (Variant Attributes Components) data
+        List<HatVacVariant> vacRecords = queryVacRecords(model, type, startDate, endDate, variant, manf);
+        
+        return mapToResponse(entity, vacRecords);
     }
 
     /**
@@ -70,10 +75,15 @@ public class HatVarVariantService {
             entity.setVarTimestamp(LocalDateTime.now());
             
             HatVarVariant updated = variantRepository.save(entity);
-            return mapToResponse(updated);
+            
+            // Fetch VAC records for updated variant
+            List<HatVacVariant> vacRecords = queryVacRecords(model, type, startDate, endDate, variant, manf);
+            return mapToResponse(updated, vacRecords);
         }
 
-        return mapToResponse(entity);
+        // Fetch VAC records for existing variant
+        List<HatVacVariant> vacRecords = queryVacRecords(model, type, startDate, endDate, variant, manf);
+        return mapToResponse(entity, vacRecords);
     }
 
     /**
@@ -145,11 +155,13 @@ public class HatVarVariantService {
     private boolean hasVariantChanged(HatVarVariant existing, VariantRequest request) {
         return !Objects.equals(existing.getVarAxlesCocVal(), request.getVarAxlesCocVal()) ||
                !Objects.equals(existing.getVarCocAnnex(), request.getVarCocAnnex()) ||
+               !Objects.equals(existing.getVarChipData(), request.getVarChipData()) ||
+               !Objects.equals(existing.getVarGenTyrList(), request.getVarGenTyrList()) ||
                !Objects.equals(existing.getVarNewmodActmasInd(), request.getVarNewmodActmasInd());
     }
 
-    private VariantResponse mapToResponse(HatVarVariant entity) {
-        return VariantResponse.builder()
+    private VariantResponse mapToResponse(HatVarVariant entity, List<HatVacVariant> vacRecords) {
+        VariantResponse.VariantResponseBuilder builder = VariantResponse.builder()
             .varModel(entity.getId().getVarModel())
             .varType(entity.getId().getVarType())
             .varStartDate(entity.getId().getVarStartDate())
@@ -162,8 +174,59 @@ public class HatVarVariantService {
             .varChipData(entity.getVarChipData())
             .varGenTyrList(entity.getVarGenTyrList())
             .varNewmodActmasInd(entity.getVarNewmodActmasInd())
+            .varCocMaxPower(entity.getVarCocMaxPower())
+            .varCocFuel(entity.getVarCocFuel())
+            .varCocCap(entity.getVarCocCap())
+            .varCocNoArrCyl(entity.getVarCocNoArrCyl())
+            .varCocDirectInj(entity.getVarCocDirectInj())
+            .varCocWrkPrin(entity.getVarCocWrkPrin())
+            .varCocEngCode(entity.getVarCocEngCode())
+            .varCocEngMan(entity.getVarCocEngMan())
             .varUserid(entity.getVarUserid())
-            .varTimestamp(entity.getVarTimestamp())
-            .build();
+            .varTimestamp(entity.getVarTimestamp());
+
+        // Map VAC fields by field_no and sub_field
+        if (vacRecords != null && !vacRecords.isEmpty()) {
+            for (HatVacVariant vac : vacRecords) {
+                String fieldNo = vac.getId().getVacFieldNo();
+                String subField = vac.getId().getVacSubField();
+                String value = vac.getVacValue();
+
+                // Map by field_no
+                if ("1".equals(fieldNo)) {
+                    if ("1".equals(subField)) {
+                        builder.axleWheelField1_1(value);
+                    } else if ("2".equals(subField)) {
+                        builder.axleWheelField1_2(value);
+                    }
+                } else if ("3".equals(fieldNo)) {
+                    builder.lengthField3(value);
+                } else if ("4".equals(fieldNo)) {
+                    builder.widthField4(value);
+                } else if ("5".equals(fieldNo)) {
+                    if ("1".equals(subField)) {
+                        builder.heightField5_1(value);
+                    } else if ("2".equals(subField)) {
+                        builder.heightField5_2(value);
+                    }
+                } else if ("6".equals(fieldNo)) {
+                    builder.rearOverhangField6(value);
+                } else if ("7".equals(fieldNo)) {
+                    builder.trackAxleField7(value);
+                } else if ("8".equals(fieldNo)) {
+                    builder.typeBodyField8(value);
+                } else if ("30".equals(fieldNo)) {
+                    builder.classVehicleField30(value);
+                } else if ("30.1".equals(fieldNo)) {
+                    builder.doorsField30_1(value);
+                } else if ("31".equals(fieldNo)) {
+                    builder.doorsField31(value);
+                } else if ("38".equals(fieldNo)) {
+                    builder.tireField38(value);
+                }
+            }
+        }
+
+        return builder.build();
     }
 }

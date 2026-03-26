@@ -52,10 +52,15 @@ public class FieldValidator {
     }
 
     public static boolean validateAxleWheel(String value) {
-        // Axle Wheel: NTN format
+        // Axle Wheel: single digit (1-9) or NTN format (digit-alphanumeric-digit)
         if (value == null || value.isEmpty()) {
             return true;
         }
+        // Check for single digit 1-9
+        if (value.matches("^[1-9]$")) {
+            return true;
+        }
+        // Check for NTN format (digit-alphanumeric-digit)
         return NTN_PATTERN.matcher(value).matches();
     }
 
