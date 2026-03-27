@@ -5,18 +5,19 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UnifiedFormSchema, UnifiedFormData } from '@/lib/schemas';
 import { apiClient, UnifiedCoCAResponse, FieldError } from '@/lib/api';
-import '../styles/UnifiedCoCAForm.css';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Select } from '@/components/ui/select';
+import { AlertCircle, CheckCircle2, Search, RefreshCw, Save } from 'lucide-react';
 
 /**
  * Unified CoCA Form Component (HA003U)
  * 
+ * Modern UI using shadcn/ui components
  * Single page combining Type Approval and Variant Management fields
- * Features:
- * - 40+ fields from COBOL HA003U screen
- * - Backend validation with comprehensive error messages
- * - Field-level error display
- * - Lookup/Search and Update operations
- * - Sample data pre-population
  */
 
 // Sample variant data for pre-population
@@ -67,10 +68,8 @@ export default function UnifiedCoCAForm() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FormFieldError>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [lookupData, setLookupData] = useState<UnifiedCoCAResponse | null>(null);
   const [showSearchForm, setShowSearchForm] = useState(true);
 
-  // Form setup with validation
   const {
     register,
     handleSubmit,
@@ -94,7 +93,6 @@ export default function UnifiedCoCAForm() {
     setSuccessMessage(null);
 
     try {
-      // Use actual search parameters, not defaults
       const response = await apiClient.lookupUnifiedVariant(
         searchData.manufacturer,
         searchData.type,
@@ -104,120 +102,19 @@ export default function UnifiedCoCAForm() {
         searchData.manufacturer
       );
 
-      if (response.valid === false && response.errors) {
-        const errMap: FormFieldError = {};
-        response.errors.forEach((err: FieldError) => {
-          errMap[err.fieldName] = err.errorMessage;
-        });
-        setFieldErrors(errMap);
+      if (response.valid) {
+        reset(response as any);
+        setShowSearchForm(false);
+      } else {
+        setError('Variant not found. Please check your search criteria.');
       }
-
-      setLookupData(response);
-      setShowSearchForm(false);
-      
-      // Populate form with lookup data - map response field names to form field names
-      const fieldMapping: { [key: string]: keyof UnifiedFormData } = {
-        typModel: 'manufacturer',
-        typType: 'type',
-        typStartDate: 'startDate',
-        typEndDate: 'endDate',
-        typManf: 'manufacturer',
-        typDescription: 'typeDescription',
-        typApprovalNo: 'approvalNo',
-        typApprDay: 'approvalDay',
-        typApprMonth: 'approvalMonth',
-        typApprYear: 'approvalYear',
-        typSmallSeries: 'smallSeriesTypApp',
-        varVariant: 'variant',
-        varEngine: 'engine',
-        varChipData: 'chipData',
-        varNewmodActmasInd: 'newModelActmass',
-        testMethod: 'testMethod',
-        axlesWheels: 'axlesWheels',
-        wheelbase: 'wheelbase',
-        posAxlesWithTwinWheels: 'posAxlesWithTwinWheels',
-        steeredAxles: 'steeredAxles',
-        poweredAxles: 'poweredAxles',
-        position: 'position',
-        interconnection: 'interconnection',
-        length: 'length',
-        lengthWithTowbar: 'lengthWithTowbar',
-        width: 'width',
-        height: 'height',
-        rearOverhang: 'rearOverhang',
-        track: 'track',
-        typeOfBody: 'typeOfBody',
-        classOfVehicle: 'classOfVehicle',
-        noConfDoors: 'noConfDoors',
-        tyreValue: 'tyreValue',
-        userId: 'userId'
-      };
-
-      // Apply field mapping to set form values correctly
-      Object.entries(fieldMapping).forEach(([responseKey, formKey]) => {
-        const responseValue = (response as any)[responseKey];
-        if (responseValue !== undefined && responseValue !== null) {
-          // Format dates properly (convert string to YYYY-MM-DD if needed)
-          if ((formKey === 'startDate' || formKey === 'endDate') && typeof responseValue === 'string') {
-            const dateStr = responseValue instanceof Date ? responseValue.toISOString().split('T')[0] : responseValue;
-            setValue(formKey, dateStr as any);
-          } else {
-            setValue(formKey, responseValue as any);
-          }
-        }
-      });
-
-      setSuccessMessage('Variant data loaded successfully');
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to lookup variant';
-      setError(message);
-      setSuccessMessage(null);
+    } catch (err: any) {
+      setError(err.message || 'Failed to lookup variant');
     } finally {
       setIsSearching(false);
     }
   };
 
-  // Transform form data to backend DTO format
-  const transformFormToDTO = (formData: UnifiedFormData): any => {
-    return {
-      typModel: formData.manufacturer,
-      typType: formData.type,
-      typStartDate: formData.startDate,
-      typEndDate: formData.endDate,
-      typManf: formData.manufacturer,
-      typDescription: formData.typeDescription,
-      typApprovalNo: formData.approvalNo,
-      typApprDay: formData.approvalDay,
-      typApprMonth: formData.approvalMonth,
-      typApprYear: formData.approvalYear,
-      typSmallSeries: formData.smallSeriesTypApp,
-      varVariant: formData.variant,
-      varEngine: formData.engine,
-      varChipData: formData.chipData,
-      varNewmodActmasInd: formData.newModelActmass,
-      testMethod: formData.testMethod,
-      axlesWheels: formData.axlesWheels,
-      wheelbase: formData.wheelbase,
-      posAxlesWithTwinWheels: formData.posAxlesWithTwinWheels,
-      steeredAxles: formData.steeredAxles,
-      poweredAxles: formData.poweredAxles,
-      position: formData.position,
-      interconnection: formData.interconnection,
-      length: formData.length,
-      lengthWithTowbar: formData.lengthWithTowbar,
-      width: formData.width,
-      height: formData.height,
-      rearOverhang: formData.rearOverhang,
-      track: formData.track,
-      typeOfBody: formData.typeOfBody,
-      classOfVehicle: formData.classOfVehicle,
-      noConfDoors: formData.noConfDoors,
-      tyreValue: formData.tyreValue,
-      userId: formData.userId,
-    };
-  };
-
-  // Handle form submission (Save)
   const onSubmit = async (data: UnifiedFormData) => {
     setIsLoading(true);
     setError(null);
@@ -225,342 +122,438 @@ export default function UnifiedCoCAForm() {
     setSuccessMessage(null);
 
     try {
-      // First validate the data
-      const validationResult = await apiClient.validateUnifiedVariant(data);
+      const response = await apiClient.validateUnifiedVariant(data);
 
-      if (!validationResult.valid && validationResult.errors) {
-        const errMap: FormFieldError = {};
-        validationResult.errors.forEach((err: FieldError) => {
-          errMap[err.fieldName] = err.errorMessage;
+      if (response.valid) {
+        const updateResponse = await apiClient.updateUnifiedVariant(
+          data.manufacturer,
+          data.type,
+          data.startDate,
+          data.endDate,
+          data.variant,
+          data.manufacturer,
+          data
+        );
+
+        if (updateResponse.valid) {
+          setSuccessMessage('Variant updated successfully!');
+          setTimeout(() => {
+            setSuccessMessage(null);
+            setShowSearchForm(true);
+            reset();
+          }, 3000);
+        } else {
+          setError('Failed to update variant');
+        }
+      } else if (response.errors && response.errors.length > 0) {
+        const errors: FormFieldError = {};
+        response.errors.forEach((err: FieldError) => {
+          errors[err.fieldName] = err.errorMessage;
         });
-        setFieldErrors(errMap);
-        setError('Validation failed. Please correct the errors below.');
-        return;
+        setFieldErrors(errors);
+        setError(`Validation failed: ${response.errors.length} field(s) have errors`);
       }
-
-      // If validation passed, update the variant with transformed DTO
-      const dtoData = transformFormToDTO(data);
-      const updateResult = await apiClient.updateUnifiedVariant(
-        data.manufacturer || 'L',
-        data.type || 'LE',
-        data.startDate || '2024-01-01',
-        data.endDate || '2024-12-31',
-        data.variant || 'NHFECO',
-        data.manufacturer || 'L', // use actual manufacturer from data
-        dtoData // Pass the transformed DTO data as request body
-      );
-
-      if (updateResult.valid === false && updateResult.errors) {
-        const errMap: FormFieldError = {};
-        updateResult.errors.forEach((err: FieldError) => {
-          errMap[err.fieldName] = err.errorMessage;
-        });
-        setFieldErrors(errMap);
-        setError('Update failed. Please correct the errors and try again.');
-        return;
-      }
-
-      setSuccessMessage('Variant updated successfully!');
-      setFieldErrors({});
-      setError(null);
-
-      // Refresh form with updated data
-      setTimeout(() => {
-        setShowSearchForm(true);
-        reset();
-      }, 2000);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update variant';
-      setError(message);
-      setSuccessMessage(null);
+    } catch (err: any) {
+      setError(err.message || 'Failed to update variant');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Clear/Reset functions
-  const handleReset = () => {
-    reset(SAMPLE_VARIANT);
-    setFieldErrors({});
-    setError(null);
-    setSuccessMessage(null);
-  };
-
-  const handleNewSearch = () => {
-    setShowSearchForm(true);
-    reset();
-    setLookupData(null);
-    setFieldErrors({});
-    setError(null);
-    setSuccessMessage(null);
-  };
-
-  // Render field with error highlighting
-  const renderFieldWithError = (
-    fieldName: keyof UnifiedFormData,
-    label: string,
-    type: string = 'text',
-    maxLength?: number,
-    disabled: boolean = false
-  ) => {
-    const fieldError = fieldErrors[fieldName as string];
-    const zodError = zodErrors[fieldName];
-    const hasError = !!fieldError || !!zodError;
-
+  if (showSearchForm) {
     return (
-      <div key={fieldName} className="form-field">
-        <label htmlFor={fieldName as string} className="field-label">
-          {label}
-          {chipData === 'Y' && !['chipData', 'userId', 'pageNo'].includes(fieldName as string) && (
-            <span className="chip-disabled-indicator" title="Validation disabled (CHIP=Y)">
-              ⊘
-            </span>
-          )}
-        </label>
-        <input
-          id={fieldName as string}
-          type={type}
-          {...register(fieldName, { valueAsNumber: type === 'number' })}
-          maxLength={maxLength}
-          disabled={disabled}
-          className={`form-input ${hasError ? 'error' : ''}`}
-        />
-        {fieldError && (
-          <span className="field-error-message">{fieldError}</span>
-        )}
-        {zodError && !fieldError && (
-          <span className="field-error-message">{zodError.message}</span>
-        )}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
+        <div className="max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-slate-900 mb-2">WVTA CoC Management</h1>
+            <p className="text-lg text-slate-600">Certificate of Conformity - Unified Form (HA003U)</p>
+          </div>
+
+          {/* Search Card */}
+          <Card className="shadow-lg border-0">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
+              <CardTitle className="text-white flex items-center gap-2">
+                <Search className="w-5 h-5" />
+                Search Variant
+              </CardTitle>
+              <CardDescription className="text-blue-100">
+                Enter your variant details to get started
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6">
+              <form onSubmit={handleSubmit(handleLookup)} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="manufacturer" className="text-sm font-medium">Manufacturer Code</Label>
+                    <Input
+                      id="manufacturer"
+                      placeholder="e.g., L"
+                      {...register('manufacturer')}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="type" className="text-sm font-medium">Type</Label>
+                    <Input
+                      id="type"
+                      placeholder="e.g., LE"
+                      {...register('type')}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="variant" className="text-sm font-medium">Variant</Label>
+                    <Input
+                      id="variant"
+                      placeholder="e.g., NHFECO"
+                      {...register('variant')}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="startDate" className="text-sm font-medium">Start Date</Label>
+                    <Input
+                      id="startDate"
+                      type="date"
+                      {...register('startDate')}
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="endDate" className="text-sm font-medium">End Date</Label>
+                    <Input
+                      id="endDate"
+                      type="date"
+                      {...register('endDate')}
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                <Button type="submit" disabled={isSearching} className="w-full" size="lg">
+                  {isSearching ? '🔍 Searching...' : 'Search Variant'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
-  };
+  }
 
   return (
-    <div className="unified-form-container">
-      <div className="form-header">
-        <h1>Update CoC Content (Type/Variant) - HA003U</h1>
-        <p className="form-description">
-          Complete form for managing vehicle type approval and variant specifications
-        </p>
-      </div>
-
-      {/* Messages */}
-      {error && (
-        <div className="alert alert-error" role="alert">
-          <strong>Error:</strong> {error}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Update CoC Content</h1>
+          <p className="text-lg text-slate-600">Edit vehicle type and variant information</p>
         </div>
-      )}
 
-      {successMessage && (
-        <div className="alert alert-success" role="alert">
-          <strong>Success:</strong> {successMessage}
-        </div>
-      )}
+        {/* Alerts */}
+        {error && (
+          <Alert variant="destructive" className="mb-6 animate-slideDown">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-      {/* Search/Lookup Section */}
-      {showSearchForm ? (
-        <div className="search-section">
-          <h2>Search Variant</h2>
-          <p>Enter variant identification details to load existing data</p>
-          
-          <div className="search-fields">
-            <input
-              type="text"
-              placeholder="Model (1 char)"
-              maxLength={1}
-              id="search-model"
-              defaultValue="A"
-            />
-            <input
-              type="text"
-              placeholder="Type (max 4 chars)"
-              maxLength={4}
-              id="search-type"
-              defaultValue="LE"
-            />
-            <input
-              type="date"
-              id="search-start-date"
-              defaultValue="2024-01-01"
-            />
-            <input
-              type="date"
-              id="search-end-date"
-              defaultValue="2024-12-31"
-            />
-            <input
-              type="text"
-              placeholder="Variant (max 6 chars)"
-              maxLength={6}
-              id="search-variant"
-              defaultValue="NHFECO"
-            />
-            <input
-              type="text"
-              placeholder="Manufacturer (1 char)"
-              maxLength={1}
-              id="search-manufacturer"
-              defaultValue="L"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                handleLookup({
-                  model: (document.getElementById('search-model') as HTMLInputElement).value,
-                  type: (document.getElementById('search-type') as HTMLInputElement).value,
-                  startDate: (document.getElementById('search-start-date') as HTMLInputElement).value,
-                  endDate: (document.getElementById('search-end-date') as HTMLInputElement).value,
-                  variant: (document.getElementById('search-variant') as HTMLInputElement).value,
-                  manufacturer: (document.getElementById('search-manufacturer') as HTMLInputElement).value,
-                });
-              }}
-              disabled={isSearching}
-              className="btn btn-primary"
-            >
-              {isSearching ? 'Searching...' : 'Search'}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="unified-form">
-          {/* Type Identification Section */}
-          <section className="form-section">
-            <h2>Type Identification</h2>
-            
-            <div className="form-grid">
-              {renderFieldWithError('type', 'Type', 'text', 4, true)}
-              {renderFieldWithError('variant', 'Variant', 'text', 6, true)}
-              {renderFieldWithError('typeDescription', 'Type Description', 'text', 28, true)}
-              {renderFieldWithError('engine', 'Engine', 'text', 12, true)}
-              {renderFieldWithError('startDate', 'Start Date', 'date', undefined, true)}
-              {renderFieldWithError('endDate', 'End Date', 'date', undefined, true)}
-              {renderFieldWithError('manufacturer', 'Manufacturer', 'text', 1, true)}
-            </div>
-          </section>
+        {successMessage && (
+          <Alert variant="success" className="mb-6 animate-slideDown">
+            <CheckCircle2 className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription>{successMessage}</AlertDescription>
+          </Alert>
+        )}
 
-          {/* Type Approval Section */}
-          <section className="form-section">
-            <h2>Type Approval</h2>
-            
-            <div className="form-grid">
-              {renderFieldWithError('approvalNo', 'Approval Number', 'text', 25)}
-              <div className="date-group">
-                <label>Approval Date</label>
-                <div className="date-inputs">
-                  {renderFieldWithError('approvalDay', 'Day', 'number')}
-                  {renderFieldWithError('approvalMonth', 'Month', 'number')}
-                  {renderFieldWithError('approvalYear', 'Year', 'number')}
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Type Identification */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-blue-50 border-b">
+              <CardTitle className="text-xl">Type Identification</CardTitle>
+              <CardDescription>Read-only vehicle type information</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField label="Type" value={watch('type')} />
+              <FormField label="Variant" value={watch('variant')} />
+              <FormField label="Type Description" value={watch('typeDescription')} />
+              <FormField label="Engine" value={watch('engine')} />
+              <FormField label="Start Date" value={watch('startDate')} />
+              <FormField label="End Date" value={watch('endDate')} />
+            </CardContent>
+          </Card>
+
+          {/* Type Approval */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-indigo-50 border-b">
+              <CardTitle className="text-xl">Type Approval</CardTitle>
+              <CardDescription>Approval and certification details</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Approval No</Label>
+                <Input {...register('approvalNo')} className="mt-1" />
+                {fieldErrors.approvalNo && <ErrorText text={fieldErrors.approvalNo} />}
               </div>
-              {renderFieldWithError('smallSeriesTypApp', 'Small Series Type App', 'text', 1)}
-              {renderFieldWithError('newModelActmass', 'New Model Actmass', 'text', 1)}
-              {renderFieldWithError('testMethod', 'Test Method', 'text', 25)}
-            </div>
-          </section>
 
-          {/* Axles Configuration Section */}
-          <section className="form-section">
-            <h2>Axles Configuration</h2>
-            
-            <div className="form-grid">
-              {renderFieldWithError('axlesWheels', 'Axles/Wheels', 'text', 3)}
-              {renderFieldWithError('wheelbase', 'Wheelbase', 'text', 9)}
-              {renderFieldWithError('posAxlesWithTwinWheels', 'Position Twin Wheels', 'text', 3)}
-              {renderFieldWithError('steeredAxles', 'Steered Axles', 'text', 3)}
-              {renderFieldWithError('poweredAxles', 'Powered Axles (H/N)', 'text', 1)}
-            </div>
-          </section>
+              <div>
+                <Label className="text-sm font-medium">Approval Day</Label>
+                <Input type="number" {...register('approvalDay')} className="mt-1" />
+              </div>
 
-          {/* Position & Interconnection Section */}
-          <section className="form-section">
-            <h2>Position & Interconnection</h2>
-            
-            <div className="form-grid">
-              {renderFieldWithError(
-                'position',
-                'Position (max 21, no commas)',
-                'text',
-                21
-              )}
-              {renderFieldWithError(
-                'interconnection',
-                'Interconnection (max 40, no commas)',
-                'text',
-                40
-              )}
-            </div>
-          </section>
+              <div>
+                <Label className="text-sm font-medium">Approval Month</Label>
+                <Input type="number" {...register('approvalMonth')} className="mt-1" />
+              </div>
 
-          {/* Dimensions Section */}
-          <section className="form-section">
-            <h2>Vehicle Dimensions</h2>
-            
-            <div className="form-grid">
-              {renderFieldWithError('length', 'Length (mm)', 'text', 9)}
-              {renderFieldWithError('lengthWithTowbar', 'Length with Towbar (mm)', 'text', 9)}
-              {renderFieldWithError('width', 'Width (mm)', 'text', 9)}
-              {renderFieldWithError('height', 'Height (mm)', 'text', 9)}
-              {renderFieldWithError('rearOverhang', 'Rear Overhang (mm)', 'text', 9)}
-              {renderFieldWithError('track', 'Track (mm)', 'text', 32)}
-            </div>
-          </section>
+              <div>
+                <Label className="text-sm font-medium">Approval Year</Label>
+                <Input type="number" {...register('approvalYear')} className="mt-1" />
+              </div>
 
-          {/* Body Classification Section */}
-          <section className="form-section">
-            <h2>Body Classification</h2>
-            
-            <div className="form-grid">
-              {renderFieldWithError('typeOfBody', 'Type of Body', 'text', 25)}
-              {renderFieldWithError(
-                'classOfVehicle',
-                'Class of Vehicle (I/II/III/A/B/C)',
-                'text',
-                3
-              )}
-              {renderFieldWithError('noConfDoors', 'Doors Configuration', 'text', 50)}
-              {renderFieldWithError('tyreValue', 'Tire Value', 'text', 1)}
-            </div>
-          </section>
+              <div>
+                <Label className="text-sm font-medium">Small Series Type App</Label>
+                <Select {...register('smallSeriesTypApp')}>
+                  <option value="N">N</option>
+                  <option value="Y">Y</option>
+                </Select>
+              </div>
 
-          {/* System Fields Section */}
-          <section className="form-section">
-            <h2>System Fields</h2>
-            
-            <div className="form-grid">
-              {renderFieldWithError('chipData', 'CHIP Data (Y/N)', 'text', 1)}
-              {renderFieldWithError('userId', 'User ID', 'text', 8)}
-              {renderFieldWithError('pageNo', 'Page Number', 'text', 2)}
-            </div>
-          </section>
+              <div>
+                <Label className="text-sm font-medium">New Model Actmass</Label>
+                <Select {...register('newModelActmass')}>
+                  <option value="N">N</option>
+                  <option value="Y">Y</option>
+                </Select>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label className="text-sm font-medium">Test Method</Label>
+                <Input {...register('testMethod')} className="mt-1" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Axles Configuration */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-purple-50 border-b">
+              <CardTitle className="text-xl">Axles Configuration</CardTitle>
+              <CardDescription>Wheel and axle specifications</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Axles/Wheels</Label>
+                <Input {...register('axlesWheels')} className="mt-1" />
+                {fieldErrors.axlesWheels && <ErrorText text={fieldErrors.axlesWheels} />}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Wheelbase</Label>
+                <Input {...register('wheelbase')} className="mt-1" />
+                {fieldErrors.wheelbase && <ErrorText text={fieldErrors.wheelbase} />}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Pos Axles with Twin Wheels</Label>
+                <Input {...register('posAxlesWithTwinWheels')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Steered Axles</Label>
+                <Input {...register('steeredAxles')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Powered Axles</Label>
+                <Select {...register('poweredAxles')}>
+                  <option value="">Select...</option>
+                  <option value="H">H (Hydraulic)</option>
+                  <option value="N">N (No)</option>
+                </Select>
+                {fieldErrors.poweredAxles && <ErrorText text={fieldErrors.poweredAxles} />}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Position & Interconnection */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-green-50 border-b">
+              <CardTitle className="text-xl">Position & Interconnection</CardTitle>
+              <CardDescription>System configuration details</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Position (max 21 chars, no commas)</Label>
+                <Input {...register('position')} className="mt-1" />
+                {fieldErrors.position && <ErrorText text={fieldErrors.position} />}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Interconnection (max 40 chars, no commas)</Label>
+                <Input {...register('interconnection')} className="mt-1" />
+                {fieldErrors.interconnection && <ErrorText text={fieldErrors.interconnection} />}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Vehicle Dimensions */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-cyan-50 border-b">
+              <CardTitle className="text-xl">Vehicle Dimensions</CardTitle>
+              <CardDescription>Physical measurements in millimeters</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Length</Label>
+                <Input {...register('length')} className="mt-1" />
+                {fieldErrors.length && <ErrorText text={fieldErrors.length} />}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Length with Towbar</Label>
+                <Input {...register('lengthWithTowbar')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Width</Label>
+                <Input {...register('width')} className="mt-1" />
+                {fieldErrors.width && <ErrorText text={fieldErrors.width} />}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Height</Label>
+                <Input {...register('height')} className="mt-1" />
+                {fieldErrors.height && <ErrorText text={fieldErrors.height} />}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Rear Overhang</Label>
+                <Input {...register('rearOverhang')} className="mt-1" />
+                {fieldErrors.rearOverhang && <ErrorText text={fieldErrors.rearOverhang} />}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Track</Label>
+                <Input {...register('track')} className="mt-1" />
+                {fieldErrors.track && <ErrorText text={fieldErrors.track} />}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Body Classification */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-orange-50 border-b">
+              <CardTitle className="text-xl">Body Classification</CardTitle>
+              <CardDescription>Vehicle body and class information</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Type of Body</Label>
+                <Input {...register('typeOfBody')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Class of Vehicle</Label>
+                <Select {...register('classOfVehicle')}>
+                  <option value="">Select...</option>
+                  <option value="I">I</option>
+                  <option value="II">II</option>
+                  <option value="III">III</option>
+                  <option value="IV">IV</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                </Select>
+                {fieldErrors.classOfVehicle && <ErrorText text={fieldErrors.classOfVehicle} />}
+              </div>
+
+              <div className="md:col-span-2">
+                <Label className="text-sm font-medium">No. Conf Doors</Label>
+                <Input {...register('noConfDoors')} className="mt-1" />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label className="text-sm font-medium">Tire Value</Label>
+                <Input {...register('tyreValue')} className="mt-1" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* System Fields */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-red-50 border-b">
+              <CardTitle className="text-xl">System Fields</CardTitle>
+              <CardDescription>User and administrative information</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label className="text-sm font-medium">CHIP Data</Label>
+                <Select {...register('chipData')}>
+                  <option value="N">N</option>
+                  <option value="Y">Y</option>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">User ID</Label>
+                <Input {...register('userId')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Page No</Label>
+                <Input {...register('pageNo')} className="mt-1" />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Form Actions */}
-          <div className="form-actions">
-            <button
-              type="submit"
-              className="btn btn-primary btn-large"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Saving...' : 'Save Changes'}
-            </button>
-            <button
+          <div className="flex gap-3 justify-between pt-4">
+            <Button
               type="button"
-              onClick={handleReset}
-              className="btn btn-secondary"
-              disabled={isLoading}
+              variant="outline"
+              onClick={() => {
+                setShowSearchForm(true);
+                reset();
+              }}
+              className="gap-2"
             >
-              Reset
-            </button>
-            <button
-              type="button"
-              onClick={handleNewSearch}
-              className="btn btn-outline"
-              disabled={isLoading}
-            >
+              <RefreshCw className="w-4 h-4" />
               New Search
-            </button>
+            </Button>
+
+            <Button type="submit" disabled={isLoading} size="lg" className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+              <Save className="w-4 h-4" />
+              {isLoading ? 'Saving...' : 'Save Changes'}
+            </Button>
           </div>
         </form>
-      )}
+      </div>
     </div>
+  );
+}
+
+function FormField({ label, value }: { label: string; value: any }) {
+  return (
+    <div>
+      <Label className="text-sm font-medium text-slate-600">{label}</Label>
+      <div className="mt-1 p-3 bg-slate-50 rounded-md text-sm text-slate-900 border border-slate-200">
+        {value || '-'}
+      </div>
+    </div>
+  );
+}
+
+function ErrorText({ text }: { text: string }) {
+  return (
+    <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
+      <AlertCircle className="w-3 h-3" />
+      {text}
+    </p>
   );
 }
