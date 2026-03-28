@@ -31,16 +31,16 @@ public class UnifiedCoCController {
 
     /**
      * Lookup variant to populate form
-     * GET /api/coc/variants?model=A&type=LE&startDate=2024-01-01&endDate=2024-12-31&variant=NHFECO&manf=L
+     * GET /api/coc/variants/{model}/{type}/{startDate}/{endDate}/{variant}/{manf}
      */
-    @GetMapping("/variants")
+    @GetMapping("/variants/{model}/{type}/{startDate}/{endDate}/{variant}/{manf}")
     public ResponseEntity<?> lookupVariant(
-            @RequestParam String model,
-            @RequestParam String type,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam String variant,
-            @RequestParam String manf) {
+            @PathVariable String model,
+            @PathVariable String type,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @PathVariable String variant,
+            @PathVariable String manf) {
 
         try {
             log.info("Lookup variant: {}/{}/{}/{}/{}/{}", model, type, startDate, endDate, variant, manf);
@@ -87,16 +87,16 @@ public class UnifiedCoCController {
 
     /**
      * Update variant with full validation
-     * PUT /api/coc/variants?model=A&type=LE&startDate=2024-01-01&endDate=2024-12-31&variant=NHFECO&manf=L
+     * PUT /api/coc/variants/{model}/{type}/{startDate}/{endDate}/{variant}/{manf}
      */
-    @PutMapping("/variants")
+    @PutMapping("/variants/{model}/{type}/{startDate}/{endDate}/{variant}/{manf}")
     public ResponseEntity<?> updateVariant(
-            @RequestParam String model,
-            @RequestParam String type,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam String variant,
-            @RequestParam String manf,
+            @PathVariable String model,
+            @PathVariable String type,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @PathVariable String variant,
+            @PathVariable String manf,
             @RequestBody UnifiedCoCARequest request) {
 
         try {

@@ -180,6 +180,25 @@ interface UnifiedCoCAResponse {
   userId?: string;
   pageNo?: string;
 
+  // ===== BACKEND RESPONSE FIELDS (with typ/var prefixes) =====
+  // These are the actual field names returned by the backend API
+  typType?: string;
+  typModel?: string;
+  typStartDate?: string;
+  typEndDate?: string;
+  typManf?: string;
+  typDescription?: string;
+  typApprovalNo?: string;
+  typApprDay?: number;
+  typApprMonth?: number;
+  typApprYear?: number;
+  typSmallSeries?: string;
+  varVariant?: string;
+  varEngine?: string;
+  varChipData?: string;
+  varNewmodActmasInd?: string;
+  lastUpdatedBy?: string;
+
   // ===== VALIDATION RESULT =====
   valid: boolean;
   errors?: FieldError[];
@@ -216,7 +235,6 @@ const apiClient = {
 
     const response = await fetch(`${API_BASE_URL}/types/lookup?${params}`, {
       method: 'GET',
-      credentials: 'include',
     });
 
     return handleResponse(response);
@@ -240,7 +258,6 @@ const apiClient = {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify(data),
       }
     );
@@ -270,7 +287,6 @@ const apiClient = {
 
     const response = await fetch(`${API_BASE_URL}/variants/lookup?${params}`, {
       method: 'GET',
-      credentials: 'include',
     });
 
     return handleResponse(response);
@@ -295,7 +311,6 @@ const apiClient = {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify(data),
       }
     );
@@ -333,7 +348,6 @@ const apiClient = {
 
     const response = await fetch(`${API_BASE_URL}/vac/update-field?${params}`, {
       method: 'POST',
-      credentials: 'include',
     });
 
     return handleResponse(response);
@@ -369,7 +383,6 @@ const apiClient = {
 
     const response = await fetch(`${API_BASE_URL}/coc/update-field?${params}`, {
       method: 'POST',
-      credentials: 'include',
     });
 
     return handleResponse(response);
@@ -389,7 +402,6 @@ const apiClient = {
 
     const response = await fetch(`${API_BASE_URL}/variants/validate-powered-axles?${params}`, {
       method: 'POST',
-      credentials: 'include',
     });
 
     return handleResponse(response);
@@ -399,7 +411,7 @@ const apiClient = {
 
   /**
    * Lookup variant for unified form (HA003U - READ)
-   * GET /api/coc/variants?model=A&type=LE&startDate=2024-01-01&endDate=2024-12-31&variant=NHFECO&manf=L
+   * GET /api/coc/variants/{model}/{type}/{startDate}/{endDate}/{variant}/{manf}
    */
   lookupUnifiedVariant: async (
     model: string,
@@ -409,20 +421,10 @@ const apiClient = {
     variant: string,
     manf: string
   ): Promise<UnifiedCoCAResponse> => {
-    const params = new URLSearchParams({
-      model,
-      type,
-      startDate,
-      endDate,
-      variant,
-      manf,
-    });
-
     const response = await fetch(
-      `${API_BASE_URL}/coc/variants?${params.toString()}`,
+      `${API_BASE_URL}/coc/variants/${model}/${type}/${startDate}/${endDate}/${variant}/${manf}`,
       {
         method: 'GET',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -441,7 +443,6 @@ const apiClient = {
   ): Promise<{ valid: boolean; errors?: FieldError[]; message?: string }> => {
     const response = await fetch(`${API_BASE_URL}/coc/validate`, {
       method: 'POST',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -453,7 +454,7 @@ const apiClient = {
 
   /**
    * Update unified form data (HA003U - UPDATE)
-   * PUT /api/coc/variants?model=A&type=LE&startDate=2024-01-01&endDate=2024-12-31&variant=NHFECO&manf=L
+   * PUT /api/coc/variants/{model}/{type}/{startDate}/{endDate}/{variant}/{manf}
    */
   updateUnifiedVariant: async (
     model: string,
@@ -464,20 +465,10 @@ const apiClient = {
     manf: string,
     data: UnifiedCoCARequest
   ): Promise<UnifiedCoCAResponse> => {
-    const params = new URLSearchParams({
-      model,
-      type,
-      startDate,
-      endDate,
-      variant,
-      manf,
-    });
-
     const response = await fetch(
-      `${API_BASE_URL}/coc/variants?${params.toString()}`,
+      `${API_BASE_URL}/coc/variants/${model}/${type}/${startDate}/${endDate}/${variant}/${manf}`,
       {
         method: 'PUT',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -499,7 +490,6 @@ const apiClient = {
   }> => {
     const response = await fetch(`${API_BASE_URL}/coc/health`, {
       method: 'GET',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },

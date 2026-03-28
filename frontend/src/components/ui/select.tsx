@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 
 const Select = React.forwardRef<
   HTMLSelectElement,
-  React.SelectHTMLAttributes<HTMLSelectElement>
+  React.HTMLAttributes<HTMLSelectElement>
 >(({ className, ...props }, ref) => (
   <div className="relative w-full">
     <select
@@ -21,4 +21,19 @@ const Select = React.forwardRef<
 ))
 Select.displayName = "Select"
 
-export { Select }
+// Minimal exports for compatibility with component patterns
+const SelectContent = ({ children, ...props }: any) => <>{children}</>
+SelectContent.displayName = "SelectContent"
+
+const SelectItem = React.forwardRef<HTMLOptionElement, any>(({ children, ...props }, ref) => (
+  <option {...props}>{children}</option>
+))
+SelectItem.displayName = "SelectItem"
+
+const SelectTrigger = ({ children }: any) => <>{children}</>
+SelectTrigger.displayName = "SelectTrigger"
+
+const SelectValue = ({ placeholder }: any) => <option value="">{placeholder}</option>
+SelectValue.displayName = "SelectValue"
+
+export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue }

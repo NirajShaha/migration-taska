@@ -102,9 +102,45 @@ export default function UnifiedCoCAForm() {
         searchData.manufacturer
       );
 
-      if (response.valid) {
-        reset(response as any);
+      if (response && response.valid) {
+        // Map response fields (with typ/var prefixes) to form fields
+        setValue('type', response.typType || '');
+        setValue('variant', response.varVariant || '');
+        setValue('typeDescription', response.typDescription || '');
+        setValue('engine', response.varEngine || '');
+        setValue('startDate', response.typStartDate || '');
+        setValue('endDate', response.typEndDate || '');
+        setValue('manufacturer', response.typManf || '');
+        setValue('chipData', (response.varChipData || 'N') as 'Y' | 'N');
+        setValue('approvalNo', response.typApprovalNo || '');
+        setValue('approvalDay', response.typApprDay || undefined);
+        setValue('approvalMonth', response.typApprMonth || undefined);
+        setValue('approvalYear', response.typApprYear || undefined);
+        setValue('smallSeriesTypApp', (response.typSmallSeries || '') as 'Y' | 'N' | '/');
+        setValue('newModelActmass', (response.varNewmodActmasInd || '') as 'Y' | 'N');
+        setValue('testMethod', response.testMethod?.trim() || '');
+        setValue('axlesWheels', response.axlesWheels || '');
+        setValue('wheelbase', response.wheelbase || '');
+        setValue('posAxlesWithTwinWheels', response.posAxlesWithTwinWheels || '');
+        setValue('steeredAxles', response.steeredAxles || '');
+        setValue('poweredAxles', response.poweredAxles || '');
+        setValue('position', response.position || '');
+        setValue('interconnection', response.interconnection || '');
+        setValue('length', response.length || '');
+        setValue('lengthWithTowbar', response.lengthWithTowbar || '');
+        setValue('width', response.width || '');
+        setValue('height', response.height || '');
+        setValue('rearOverhang', response.rearOverhang || '');
+        setValue('track', response.track || '');
+        setValue('typeOfBody', response.typeOfBody || '');
+        setValue('classOfVehicle', response.classOfVehicle || '');
+        setValue('noConfDoors', response.noConfDoors || '');
+        setValue('tyreValue', response.tyreValue || '');
+        setValue('userId', response.lastUpdatedBy || 'USER001');
+        setValue('pageNo', '01');
+
         setShowSearchForm(false);
+        setSuccessMessage('Variant data loaded successfully');
       } else {
         setError('Variant not found. Please check your search criteria.');
       }
