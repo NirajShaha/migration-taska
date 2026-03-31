@@ -1,9 +1,6 @@
-/**
- * API Client for WVTA CoC Management System
- * Handles all backend API calls for type and variant management
- */
+import { getSession } from 'next-auth/react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081';
 
 interface TypeRequestBody {
   typModel: string;
@@ -160,15 +157,15 @@ interface UnifiedCoCAResponse {
   startDate?: string;
   endDate?: string;
   manufacturer?: string;
-  chipData?: 'Y' | 'N';
+  chipData?: "Y" | "N";
 
   // ===== TYPE APPROVAL FIELDS =====
   approvalNo?: string;
   approvalDay?: number;
   approvalMonth?: number;
   approvalYear?: number;
-  smallSeriesTypApp?: 'Y' | 'N' | '/';
-  newModelActmass?: 'Y' | 'N';
+  smallSeriesTypApp?: "Y" | "N" | "/";
+  newModelActmass?: "Y" | "N";
 
   // ===== TEST METHOD =====
   testMethod?: string;
@@ -183,6 +180,7 @@ interface UnifiedCoCAResponse {
   // ===== POSITION & INTERCONNECTION =====
   position?: string;
   interconnection?: string;
+  varGenTyrList?: string;
 
   // ===== DIMENSIONS =====
   length?: string;
@@ -253,7 +251,7 @@ interface UnifiedCoCAResponse {
   varChipData?: string;
   varNewmodActmasInd?: string;
   lastUpdatedBy?: string;
-  
+
   // Certificate fields from backend response
   cocLocAttachment?: string;
   cocLocOnChassis?: string;
@@ -265,6 +263,19 @@ interface UnifiedCoCAResponse {
   valid: boolean;
   errors?: FieldError[];
 }
+
+interface LoginDTO {
+  email: string;
+  password: string;
+}
+
+interface User {
+  email: string;
+  password: string;
+  id: string;
+  firstName: string;
+  lastName: string;
+};
 
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
@@ -285,7 +296,8 @@ const apiClient = {
     type: string,
     startDate: string,
     endDate: string,
-    manf: string
+    manf: string,
+    accessToken?: string
   ) => {
     const params = new URLSearchParams({
       model,
@@ -295,12 +307,36 @@ const apiClient = {
       manf,
     });
 
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(`${API_BASE_URL}/types/lookup?${params}`, {
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
     });
 
     return handleResponse(response);
   },
+
+  handleLogin: async ( request: LoginDTO ): Promise<User> => {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Login failed with status: ${response.status}`);
+  }
+  const data = await response.json();
+
+  return data;
+},
 
   /**
    * Update type approval (HA100T-UPDATE-APPROVAL-NO)
@@ -311,14 +347,19 @@ const apiClient = {
     startDate: string,
     endDate: string,
     manf: string,
-    data: TypeRequestBody
+    data: TypeRequestBody,
+    accessToken?: string
   ) => {
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(
       `${API_BASE_URL}/types/${model}/${type}/${startDate}/${endDate}/${manf}/approval`,
       {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
         },
         body: JSON.stringify(data),
       }
@@ -336,7 +377,8 @@ const apiClient = {
     startDate: string,
     endDate: string,
     variant: string,
-    manf: string
+    manf: string,
+    accessToken?: string
   ) => {
     const params = new URLSearchParams({
       model,
@@ -347,8 +389,15 @@ const apiClient = {
       manf,
     });
 
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(`${API_BASE_URL}/variants/lookup?${params}`, {
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
     });
 
     return handleResponse(response);
@@ -364,14 +413,19 @@ const apiClient = {
     endDate: string,
     variant: string,
     manf: string,
-    data: VariantRequestBody
+    data: VariantRequestBody,
+    accessToken?: string
   ) => {
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(
       `${API_BASE_URL}/variants/${model}/${type}/${startDate}/${endDate}/${variant}/${manf}`,
       {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
         },
         body: JSON.stringify(data),
       }
@@ -393,7 +447,8 @@ const apiClient = {
     fieldNo: string,
     subField: string,
     value: string,
-    userId: string
+    userId: string,
+    accessToken?: string
   ) => {
     const params = new URLSearchParams({
       model,
@@ -408,8 +463,15 @@ const apiClient = {
       userId,
     });
 
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(`${API_BASE_URL}/vac/update-field?${params}`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
     });
 
     return handleResponse(response);
@@ -428,7 +490,8 @@ const apiClient = {
     subField: string,
     country: string,
     value: string,
-    userId: string
+    userId: string,
+    accessToken?: string
   ) => {
     const params = new URLSearchParams({
       model,
@@ -443,8 +506,15 @@ const apiClient = {
       userId,
     });
 
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(`${API_BASE_URL}/coc/update-field?${params}`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
     });
 
     return handleResponse(response);
@@ -456,14 +526,22 @@ const apiClient = {
   validatePoweredAxles: async (
     poweredAxles: string,
     position?: string,
-    interconnection?: string
+    interconnection?: string,
+    accessToken?: string
   ) => {
     const params = new URLSearchParams({ poweredAxles });
     if (position) params.append('position', position);
     if (interconnection) params.append('interconnection', interconnection);
 
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(`${API_BASE_URL}/variants/validate-powered-axles?${params}`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
     });
 
     return handleResponse(response);
@@ -481,14 +559,19 @@ const apiClient = {
     startDate: string,
     endDate: string,
     variant: string,
-    manf: string
+    manf: string,
+    accessToken?: string
   ): Promise<UnifiedCoCAResponse> => {
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(
       `${API_BASE_URL}/coc/variants/${model}/${type}/${startDate}/${endDate}/${variant}/${manf}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
         },
       }
     );
@@ -501,12 +584,17 @@ const apiClient = {
    * POST /api/coc/validate
    */
   validateUnifiedVariant: async (
-    data: UnifiedCoCARequest
+    data: UnifiedCoCARequest,
+    accessToken?: string
   ): Promise<{ valid: boolean; errors?: FieldError[]; message?: string }> => {
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(`${API_BASE_URL}/coc/validate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
       },
       body: JSON.stringify(data),
     });
@@ -525,14 +613,19 @@ const apiClient = {
     endDate: string,
     variant: string,
     manf: string,
-    data: UnifiedCoCARequest
+    data: UnifiedCoCARequest,
+    accessToken?: string
   ): Promise<UnifiedCoCAResponse> => {
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(
       `${API_BASE_URL}/coc/variants/${model}/${type}/${startDate}/${endDate}/${variant}/${manf}`,
       {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
         },
         body: JSON.stringify(data),
       }
@@ -545,15 +638,19 @@ const apiClient = {
    * Health check for unified CoCA service
    * GET /api/coc/health
    */
-  checkUnifiedServiceHealth: async (): Promise<{
+  checkUnifiedServiceHealth: async (accessToken?: string): Promise<{
     status: string;
     module: string;
     screen: string;
   }> => {
+    const session = await getSession();
+    const token = accessToken || (session as any)?.accessToken;
+
     const response = await fetch(`${API_BASE_URL}/coc/health`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
       },
     });
 
@@ -569,3 +666,4 @@ export type {
   UnifiedCoCAResponse,
   FieldError,
 };
+  

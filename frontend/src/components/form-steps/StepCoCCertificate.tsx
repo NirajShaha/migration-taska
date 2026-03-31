@@ -18,7 +18,7 @@ interface StepCoCCertificateProps {
 
 export default function StepCoCCertificate({ form }: StepCoCCertificateProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-visible">
       <div>
         <h2 className="text-2xl font-bold text-white mb-2">Certificate of Conformity (CoC) Details</h2>
         <p className="text-slate-400">

@@ -32,7 +32,7 @@ export default function StepReview({ formData }: StepReviewProps) {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-visible">
       <div>
         <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
           <CheckCircle2 className="w-6 h-6 text-green-400" />
@@ -121,7 +121,7 @@ export default function StepReview({ formData }: StepReviewProps) {
             { label: 'Type of Body', value: formData.typeOfBody },
             { label: 'Class of Vehicle', value: formData.classOfVehicle },
             { label: 'Number & Configuration of Doors', value: formData.noConfDoors },
-            { label: 'Tire Value', value: formData.tyreValue },
+            { label: 'Tire Value', value: formData.tyreValue || 'N/A' },
           ]}
         />
       </div>

@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TypeFormSchema, TypeFormData } from '@/lib/schemas';
 import { apiClient } from '@/lib/api';
 
 export const TypeForm: React.FC = () => {
+  const router = useRouter();
   const [phase, setPhase] = useState<'lookup' | 'update'>('lookup');
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -106,13 +108,13 @@ export const TypeForm: React.FC = () => {
     }
   };
 
-  const onSubmitUpdate = async (data: TypeFormData) => {
+  const onSubmitUpdate: SubmitHandler<TypeFormData> = async (data) => {
     try {
       setIsLoading(true);
       setErrorMessage('');
       setSuccessMessage('');
 
-      let typApprDate = undefined;
+      let typApprDate: string | undefined = undefined;
       if (data.typApprDateDay && data.typApprDateMonth && data.typApprDateYear) {
         const day = String(data.typApprDateDay).padStart(2, '0');
         const month = String(data.typApprDateMonth).padStart(2, '0');
@@ -257,15 +259,15 @@ export const TypeForm: React.FC = () => {
               <div style={gridStyleDateFields}>
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>Day:</span>
-                  <input {...register('typApprDateDay')} type="number" min={1} max={31} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
+                  <input {...register('typApprDateDay', { valueAsNumber: true })} type="number" min={1} max={31} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
                 </label>
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>Month:</span>
-                  <input {...register('typApprDateMonth')} type="number" min={1} max={12} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
+                  <input {...register('typApprDateMonth', { valueAsNumber: true })} type="number" min={1} max={12} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
                 </label>
                 <label style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>Year:</span>
-                  <input {...register('typApprDateYear')} type="number" min={1900} max={2100} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
+                  <input {...register('typApprDateYear', { valueAsNumber: true })} type="number" min={1900} max={2100} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
                 </label>
               </div>
             </div>
@@ -283,7 +285,7 @@ export const TypeForm: React.FC = () => {
             <button type="submit" disabled={isLoading} style={{ flex: 1, padding: '12px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}>
               {isLoading ? '⏳ Updating...' : '✓ Update Type'}
             </button>
-            <button type="button" onClick={() => { setPhase('lookup'); reset(); }} style={{ flex: 1, padding: '12px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}>
+            <button type="button" onClick={() => router.push('/dashboard')} style={{ flex: 1, padding: '12px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}>
               ← Back to Search
             </button>
           </div>
