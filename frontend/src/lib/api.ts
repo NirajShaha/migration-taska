@@ -116,6 +116,28 @@ interface UnifiedCoCARequest {
   noConfDoors?: string;
   tyreValue?: string;
 
+  // ===== ENGINE DETAILS (HA003D) =====
+  engineCode?: string;
+  engineManufacturer?: string;
+  workingPrinciple?: string;
+  engineCycle?: string;
+  engineIgnition?: string;
+  directInjection?: string;
+  noArrangementCylinders?: string;
+  fuel?: string;
+  capacity?: string;
+  maxNetPower?: string;
+  maxHourlyOutputElec?: string;
+  maxNetPowerElec?: string;
+  max30MinPowerElec?: string;
+
+  // ===== CERTIFICATE OF CONFORMITY (HA003R) =====
+  vinPlateAttachment?: string;
+  vinPlateLocation?: string;
+  commercialDescription?: string;
+  remarks?: string;
+  additionalInfo?: string;
+
   // ===== SYSTEM FIELDS =====
   userId?: string;
   pageNo?: string;
@@ -176,28 +198,68 @@ interface UnifiedCoCAResponse {
   noConfDoors?: string;
   tyreValue?: string;
 
+  // ===== ENGINE DETAILS (HA003D) =====
+  engineCode?: string;
+  engineManufacturer?: string;
+  workingPrinciple?: string;
+  engineCycle?: string;
+  engineIgnition?: string;
+  directInjection?: string;
+  noArrangementCylinders?: string;
+  fuel?: string;
+  capacity?: string;
+  maxNetPower?: string;
+  maxHourlyOutputElec?: string;
+  maxNetPowerElec?: string;
+  max30MinPowerElec?: string;
+
+  // ===== CERTIFICATE OF CONFORMITY (HA003R) =====
+  vinPlateAttachment?: string;
+  vinPlateLocation?: string;
+  commercialDescription?: string;
+  remarks?: string;
+  additionalInfo?: string;
+
   // ===== SYSTEM FIELDS =====
   userId?: string;
   pageNo?: string;
 
-  // ===== BACKEND RESPONSE FIELDS (with typ/var prefixes) =====
-  // These are the actual field names returned by the backend API
-  typType?: string;
-  typModel?: string;
-  typStartDate?: string;
-  typEndDate?: string;
-  typManf?: string;
-  typDescription?: string;
+  // ===== BACKEND RESPONSE FIELDS (with typ/var/coc prefixes) =====
+  // Engine and VAC fields from backend response
+  varCocEngCode?: string;
+  varCocEngMan?: string;
+  varCocWrkPrin?: string;
+  varCocDirectInj?: string;
+  varCocNoArrCyl?: string;
+  varCocFuel?: string;
+  varCocCap?: string;
+  varCocMaxPower?: string;
+  typApprTypeInd?: string;
+  typGenTyrList?: string;
   typApprovalNo?: string;
   typApprDay?: number;
   typApprMonth?: number;
   typApprYear?: number;
   typSmallSeries?: string;
+  typChipData?: string;
+  typDescription?: string;
+  typType?: string;
+  typModel?: string;
+  typStartDate?: string;
+  typEndDate?: string;
+  typManf?: string;
   varVariant?: string;
   varEngine?: string;
   varChipData?: string;
   varNewmodActmasInd?: string;
   lastUpdatedBy?: string;
+  
+  // Certificate fields from backend response
+  cocLocAttachment?: string;
+  cocLocOnChassis?: string;
+  cocTypeDescription?: string;
+  cocRemarks?: string;
+  cocAdditionalInfo?: string;
 
   // ===== VALIDATION RESULT =====
   valid: boolean;

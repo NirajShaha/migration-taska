@@ -42,6 +42,12 @@ public class HatTypType {
     @Column(name = "typ_small_series")
     private String typSmallSeries;
 
+    @Column(name = "typ_chip_data")
+    private String typChipData;
+
+    @Column(name = "typ_gen_tyr_list")
+    private String typGenTyrList;
+
     @PreUpdate
     protected void onUpdate() {
         this.typTimestamp = LocalDateTime.now();

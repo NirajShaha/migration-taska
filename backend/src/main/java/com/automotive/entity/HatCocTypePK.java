@@ -36,4 +36,16 @@ public class HatCocTypePK implements Serializable {
 
     @Column(name = "coc_country", length = 2)
     private String cocCountry;
+
+    // Explicit no-arg constructor for Hibernate compatibility
+    public HatCocTypePK() {
+        this.cocModel = null;
+        this.cocType = null;
+        this.cocStartDate = null;
+        this.cocEndDate = null;
+        this.cocManf = null;
+        this.cocFieldNo = null;
+        this.cocSubField = null;
+        this.cocCountry = null;
+    }
 }

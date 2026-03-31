@@ -208,8 +208,8 @@ export const VariantForm: React.FC = () => {
   };
 
   const renderFormInput = (label: string, name: any, required = false, maxLength?: number) => (
-    <div style={{ marginBottom: '12px' }}>
-      <label style={{ display: 'block', fontWeight: '500', marginBottom: '4px' }}>
+    <div style={{ marginBottom: '0px' }}>
+      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '13px' }}>
         {label}
         {required && <span style={{ color: 'red' }}>*</span>}
       </label>
@@ -219,15 +219,15 @@ export const VariantForm: React.FC = () => {
         required={required}
         style={{
           width: '100%',
-          padding: '8px',
+          padding: '8px 10px',
           border: '1px solid #ddd',
           borderRadius: '4px',
-          fontSize: '14px',
+          fontSize: '13px',
           boxSizing: 'border-box',
         }}
       />
       {errors[name as keyof typeof errors] && (
-        <span style={{ color: 'red', fontSize: '12px' }}>
+        <span style={{ color: 'red', fontSize: '11px', marginTop: '2px', display: 'block' }}>
           {(errors[name as keyof typeof errors]?.message as string) || 'Invalid field'}
         </span>
       )}
@@ -253,12 +253,30 @@ export const VariantForm: React.FC = () => {
 
   const gridStyle: React.CSSProperties = {
     display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '15px',
+  };
+
+  const gridStyle2Col: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '15px',
+  };
+
+  const gridStyle3Col: React.CSSProperties = {
+    display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
     gap: '15px',
   };
 
+  const gridStyle4Col: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '15px',
+  };
+
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
+    <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
       <h1 style={{ color: '#0056b3', borderBottom: '3px solid #0056b3', paddingBottom: '10px' }}>
         📋 HA003U - Vehicle Type/Variant CoC Content
       </h1>
@@ -283,9 +301,9 @@ export const VariantForm: React.FC = () => {
               Enter the variant lookup parameters to retrieve existing data
             </p>
 
-            <div style={gridStyle}>
+            <div style={gridStyle3Col}>
               <div>
-                <label style={{ display: 'block', fontWeight: '500', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '13px' }}>
                   Model <span style={{ color: 'red' }}>*</span>
                 </label>
                 <input
@@ -293,13 +311,13 @@ export const VariantForm: React.FC = () => {
                   maxLength={1}
                   required
                   placeholder="B"
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                 />
-                {errorsLookup.varModel && <span style={{ color: 'red', fontSize: '12px' }}>{errorsLookup.varModel.message}</span>}
+                {errorsLookup.varModel && <span style={{ color: 'red', fontSize: '11px' }}>{errorsLookup.varModel.message}</span>}
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: '500', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '13px' }}>
                   Type <span style={{ color: 'red' }}>*</span>
                 </label>
                 <input
@@ -307,39 +325,39 @@ export const VariantForm: React.FC = () => {
                   maxLength={4}
                   required
                   placeholder="7A10"
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                 />
-                {errorsLookup.varType && <span style={{ color: 'red', fontSize: '12px' }}>{errorsLookup.varType.message}</span>}
+                {errorsLookup.varType && <span style={{ color: 'red', fontSize: '11px' }}>{errorsLookup.varType.message}</span>}
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: '500', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '13px' }}>
                   Start Date <span style={{ color: 'red' }}>*</span>
                 </label>
                 <input
                   {...registerLookup('varStartDate')}
                   type="date"
                   required
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                 />
-                {errorsLookup.varStartDate && <span style={{ color: 'red', fontSize: '12px' }}>{errorsLookup.varStartDate.message}</span>}
+                {errorsLookup.varStartDate && <span style={{ color: 'red', fontSize: '11px' }}>{errorsLookup.varStartDate.message}</span>}
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: '500', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '13px' }}>
                   End Date <span style={{ color: 'red' }}>*</span>
                 </label>
                 <input
                   {...registerLookup('varEndDate')}
                   type="date"
                   required
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                 />
-                {errorsLookup.varEndDate && <span style={{ color: 'red', fontSize: '12px' }}>{errorsLookup.varEndDate.message}</span>}
+                {errorsLookup.varEndDate && <span style={{ color: 'red', fontSize: '11px' }}>{errorsLookup.varEndDate.message}</span>}
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: '500', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '13px' }}>
                   Variant <span style={{ color: 'red' }}>*</span>
                 </label>
                 <input
@@ -347,13 +365,13 @@ export const VariantForm: React.FC = () => {
                   maxLength={6}
                   required
                   placeholder="BASE00"
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                 />
-                {errorsLookup.varVariant && <span style={{ color: 'red', fontSize: '12px' }}>{errorsLookup.varVariant.message}</span>}
+                {errorsLookup.varVariant && <span style={{ color: 'red', fontSize: '11px' }}>{errorsLookup.varVariant.message}</span>}
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: '500', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '13px' }}>
                   Manufacturer <span style={{ color: 'red' }}>*</span>
                 </label>
                 <input
@@ -361,9 +379,9 @@ export const VariantForm: React.FC = () => {
                   maxLength={1}
                   required
                   placeholder="B"
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+                  style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px' }}
                 />
-                {errorsLookup.varManf && <span style={{ color: 'red', fontSize: '12px' }}>{errorsLookup.varManf.message}</span>}
+                {errorsLookup.varManf && <span style={{ color: 'red', fontSize: '11px' }}>{errorsLookup.varManf.message}</span>}
               </div>
             </div>
 
@@ -378,7 +396,7 @@ export const VariantForm: React.FC = () => {
                 border: 'none',
                 borderRadius: '4px',
                 cursor: isLoading ? 'not-allowed' : 'pointer',
-                fontSize: '16px',
+                fontSize: '15px',
                 fontWeight: 'bold',
               }}
             >
@@ -395,13 +413,11 @@ export const VariantForm: React.FC = () => {
           {/* SECTION 1: Variant Identification */}
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}>📌 Variant Identification</div>
-            <div style={gridStyle}>
+            <div style={gridStyle3Col}>
               {renderFormInput('Model', 'varModel', true, 1)}
               {renderFormInput('Type', 'varType', true, 4)}
               {renderFormInput('Variant Code', 'varVariant', true, 6)}
               {renderFormInput('Manufacturer', 'varManf', true, 1)}
-            </div>
-            <div style={gridStyle}>
               {renderFormInput('Start Date', 'varStartDate', true)}
               {renderFormInput('End Date', 'varEndDate', true)}
             </div>
@@ -410,7 +426,7 @@ export const VariantForm: React.FC = () => {
           {/* SECTION 2: Engine & Power Information */}
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}>🔧 Engine & Power Information</div>
-            <div style={gridStyle}>
+            <div style={gridStyle4Col}>
               {renderFormInput('Engine Code', 'varEngine', false, 12)}
               {renderFormInput('Max Power', 'varCocMaxPower', false, 20)}
               {renderFormInput('Fuel Type', 'varCocFuel', false, 10)}
@@ -426,7 +442,7 @@ export const VariantForm: React.FC = () => {
           {/* SECTION 3: Axles & Configuration */}
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}>⚙️ Axles & Configuration</div>
-            <div style={gridStyle}>
+            <div style={gridStyle3Col}>
               {renderFormInput('Axles/Wheels CoC Value', 'varAxlesCocVal', false, 50)}
               {renderFormInput('Axles/Wheels Field (1.1)', 'axleWheelField1_1', false, 12)}
               {renderFormInput('Axles/Wheels Field (1.2)', 'axleWheelField1_2', false, 10)}
@@ -437,7 +453,7 @@ export const VariantForm: React.FC = () => {
           {/* SECTION 4: Vehicle Dimensions */}
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}>📏 Vehicle Dimensions</div>
-            <div style={gridStyle}>
+            <div style={gridStyle4Col}>
               {renderFormInput('Length (mm) - Field 3', 'lengthField3', false, 10)}
               {renderFormInput('Width (mm) - Field 4', 'widthField4', false, 10)}
               {renderFormInput('Height - Max (mm) - Field 5.1', 'heightField5_1', false, 10)}
@@ -449,7 +465,7 @@ export const VariantForm: React.FC = () => {
           {/* SECTION 5: Vehicle Classification */}
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}>🚗 Vehicle Classification</div>
-            <div style={gridStyle}>
+            <div style={gridStyle3Col}>
               {renderFormInput('Type of Body - Field 8', 'typeBodyField8', false, 25)}
               {renderFormInput('Class of Vehicle - Field 30', 'classVehicleField30', false, 10)}
               {renderFormInput('No. and Config of Doors - Field 30.1', 'doorsField30_1', false, 50)}
@@ -460,7 +476,7 @@ export const VariantForm: React.FC = () => {
           {/* SECTION 6: Tires & Approval */}
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}>🛞 Tires & Approval</div>
-            <div style={gridStyle}>
+            <div style={gridStyle4Col}>
               {renderFormInput('Tire Specifications - Field 38', 'tireField38', false, 50)}
               {renderFormInput('Test Method / Annex', 'varCocAnnex', false, 25)}
               {renderFormInput('Gen Tyre List', 'varGenTyrList', false, 1)}
@@ -472,7 +488,9 @@ export const VariantForm: React.FC = () => {
           {/* SECTION 7: System Fields */}
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}>⚙️ System Fields</div>
-            {renderFormInput('User ID', 'userId', true, 8)}
+            <div style={gridStyle4Col}>
+              {renderFormInput('User ID', 'userId', true, 8)}
+            </div>
           </div>
 
           {/* Action Buttons */}
