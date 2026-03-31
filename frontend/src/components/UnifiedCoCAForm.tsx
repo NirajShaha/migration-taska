@@ -29,13 +29,15 @@ const SAMPLE_VARIANT = {
   startDate: '2024-01-01',
   endDate: '2024-12-31',
   manufacturer: 'L',
-  chipData: 'N' as const,
+  chartData: 'N' as const,
   approvalNo: 'HA2024-001',
-  approvalDay: 15,
-  approvalMonth: 6,
-  approvalYear: 2024,
+  approvalDay: '15',
+  approvalMonth: '6',
+  approvalYear: '2024',
   smallSeriesTypApp: 'N' as const,
   newModelActmass: 'Y' as const,
+  approvalTypeIndicator: 'A' as const,
+  generateTyreList: 'Y' as const,
   testMethod: 'UN ECE R14',
   axlesWheels: '2-2',
   wheelbase: '2587',
@@ -54,6 +56,24 @@ const SAMPLE_VARIANT = {
   classOfVehicle: 'I',
   noConfDoors: '4 side doors + 1 tailgate',
   tyreValue: 'A',
+  engineCode: '',
+  engineManufacturer: '',
+  workingPrinciple: '',
+  engineCycle: '',
+  engineIgnition: '',
+  directInjection: '',
+  noArrangementCylinders: '',
+  fuel: '',
+  capacity: '',
+  maxNetPower: '',
+  maxHourlyOutputElec: '',
+  maxNetPowerElec: '',
+  max30MinPowerElec: '',
+  vinPlateAttachment: '',
+  vinPlateLocation: '',
+  commercialDescription: '',
+  remarks: '',
+  additionalInfo: '',
   userId: 'USER001',
   pageNo: '01',
 };
@@ -85,7 +105,7 @@ export default function UnifiedCoCAForm() {
 
   const chipData = watch('chipData');
 
-  // Handle form lookup
+  // Handle form lookup with comprehensive field mapping
   const handleLookup = async (searchData: any) => {
     setIsSearching(true);
     setError(null);
@@ -103,7 +123,10 @@ export default function UnifiedCoCAForm() {
       );
 
       if (response && response.valid) {
-        // Map response fields (with typ/var prefixes) to form fields
+        // ===== MAP RESPONSE TO FORM FIELDS =====
+        // Use empty string for all fields to prevent controlled component warnings
+        
+        // Type Identification fields
         setValue('type', response.typType || '');
         setValue('variant', response.varVariant || '');
         setValue('typeDescription', response.typDescription || '');
@@ -111,31 +134,68 @@ export default function UnifiedCoCAForm() {
         setValue('startDate', response.typStartDate || '');
         setValue('endDate', response.typEndDate || '');
         setValue('manufacturer', response.typManf || '');
-        setValue('chipData', (response.varChipData || 'N') as 'Y' | 'N');
+
+        // Type Approval fields
         setValue('approvalNo', response.typApprovalNo || '');
-        setValue('approvalDay', response.typApprDay || undefined);
-        setValue('approvalMonth', response.typApprMonth || undefined);
-        setValue('approvalYear', response.typApprYear || undefined);
-        setValue('smallSeriesTypApp', (response.typSmallSeries || '') as 'Y' | 'N' | '/');
-        setValue('newModelActmass', (response.varNewmodActmasInd || '') as 'Y' | 'N');
+        setValue('approvalDay', response.typApprDay?.toString() || '');
+        setValue('approvalMonth', response.typApprMonth?.toString() || '');
+        setValue('approvalYear', response.typApprYear?.toString() || '');
+        setValue('smallSeriesTypApp', (response.typSmallSeries as 'Y' | 'N' | '/' | undefined) || '');
+        setValue('newModelActmass', (response.varNewmodActmasInd as 'Y' | 'N' | undefined) || '');
+        setValue('approvalTypeIndicator', (response.typApprTypeInd as 'A' | 'B' | 'C' | undefined) || '');
+        setValue('generateTyreList', (response.typGenTyrList as 'Y' | 'N' | undefined) || '');
         setValue('testMethod', response.testMethod?.trim() || '');
+        setValue('chartData', (response.varChipData as 'Y' | 'N' | undefined) || 'N');
+
+        // Axles Configuration fields
         setValue('axlesWheels', response.axlesWheels || '');
         setValue('wheelbase', response.wheelbase || '');
         setValue('posAxlesWithTwinWheels', response.posAxlesWithTwinWheels || '');
         setValue('steeredAxles', response.steeredAxles || '');
         setValue('poweredAxles', response.poweredAxles || '');
+
+        // Position & Interconnection fields
         setValue('position', response.position || '');
         setValue('interconnection', response.interconnection || '');
+
+        // Vehicle Dimensions fields
         setValue('length', response.length || '');
         setValue('lengthWithTowbar', response.lengthWithTowbar || '');
         setValue('width', response.width || '');
         setValue('height', response.height || '');
         setValue('rearOverhang', response.rearOverhang || '');
         setValue('track', response.track || '');
+
+        // Body Classification fields
         setValue('typeOfBody', response.typeOfBody || '');
         setValue('classOfVehicle', response.classOfVehicle || '');
         setValue('noConfDoors', response.noConfDoors || '');
         setValue('tyreValue', response.tyreValue || '');
+
+        // ===== ENGINE DETAILS (HA003D) =====
+        setValue('engineCode', response.varCocEngCode || '');
+        setValue('engineManufacturer', response.varCocEngMan || '');
+        setValue('workingPrinciple', response.varCocWrkPrin || '');
+        setValue('engineCycle', response.varCocWrkPrin || ''); // Use varCocWrkPrin as engine cycle
+        setValue('engineIgnition', ''); // Not in API response yet
+        setValue('directInjection', response.varCocDirectInj?.trim() || '');
+        setValue('noArrangementCylinders', response.varCocNoArrCyl || '');
+        setValue('fuel', response.varCocFuel || '');
+        setValue('capacity', response.varCocCap || '');
+        setValue('maxNetPower', response.varCocMaxPower || '');
+        setValue('maxHourlyOutputElec', ''); // Not in API response yet
+        setValue('maxNetPowerElec', ''); // Not in API response yet
+        setValue('max30MinPowerElec', ''); // Not in API response yet
+
+        // ===== CERTIFICATE OF CONFORMITY (HA003R) =====
+        // Map coc* fields to form field names
+        setValue('vinPlateAttachment', response.cocLocAttachment || '');
+        setValue('vinPlateLocation', response.cocLocOnChassis || '');
+        setValue('commercialDescription', response.cocTypeDescription || '');
+        setValue('remarks', response.cocRemarks || '');
+        setValue('additionalInfo', response.cocAdditionalInfo || '');
+
+        // System Fields
         setValue('userId', response.lastUpdatedBy || 'USER001');
         setValue('pageNo', '01');
 
@@ -158,17 +218,93 @@ export default function UnifiedCoCAForm() {
     setSuccessMessage(null);
 
     try {
-      const response = await apiClient.validateUnifiedVariant(data);
+      // Transform frontend field names to backend field names before validation
+      const backendData = {
+        // Type Identification
+        typModel: data.manufacturer,
+        typType: data.type,
+        typStartDate: data.startDate,
+        typEndDate: data.endDate,
+        typManf: data.manufacturer,
+        typDescription: data.typeDescription,
+
+        // Variant Identification
+        varVariant: data.variant,
+        varEngine: data.engine,
+        varChipData: data.chartData,
+
+        // Type Approval
+        typApprovalNo: data.approvalNo,
+        typApprDay: data.approvalDay ? parseInt(data.approvalDay) : undefined,
+        typApprMonth: data.approvalMonth ? parseInt(data.approvalMonth) : undefined,
+        typApprYear: data.approvalYear ? parseInt(data.approvalYear) : undefined,
+        typSmallSeries: data.smallSeriesTypApp,
+        typApprTypeInd: data.approvalTypeIndicator,
+        typChipData: data.chartData,
+        typGenTyrList: data.generateTyreList,
+        varNewmodActmasInd: data.newModelActmass,
+        varGenTyrList: data.generateTyreList,
+
+        // Engine Details - map frontend field names to backend varCoc* field names
+        varCocEngCode: data.engineCode,
+        varCocEngMan: data.engineManufacturer,
+        varCocWrkPrin: data.workingPrinciple,
+        varCocDirectInj: data.directInjection,
+        varCocNoArrCyl: data.noArrangementCylinders,
+        varCocFuel: data.fuel,
+        varCocCap: data.capacity,
+        varCocMaxPower: data.maxNetPower,
+
+        // Test Method
+        testMethod: data.testMethod,
+
+        // Axles Configuration
+        axlesWheels: data.axlesWheels,
+        wheelbase: data.wheelbase,
+        posAxlesWithTwinWheels: data.posAxlesWithTwinWheels,
+        steeredAxles: data.steeredAxles,
+        poweredAxles: data.poweredAxles,
+
+        // Position & Interconnection
+        position: data.position,
+        interconnection: data.interconnection,
+
+        // Dimensions
+        length: data.length,
+        lengthWithTowbar: data.lengthWithTowbar,
+        width: data.width,
+        height: data.height,
+        rearOverhang: data.rearOverhang,
+        track: data.track,
+
+        // Body Classification
+        typeOfBody: data.typeOfBody,
+        classOfVehicle: data.classOfVehicle,
+        noConfDoors: data.noConfDoors,
+        tyreValue: data.tyreValue,
+
+        // Certificate - map frontend field names to backend coc* field names
+        cocLocAttachment: data.vinPlateAttachment,
+        cocLocOnChassis: data.vinPlateLocation,
+        cocTypeDescription: data.commercialDescription,
+        cocRemarks: data.remarks,
+        cocAdditionalInfo: data.additionalInfo,
+
+        // System
+        userId: data.userId,
+      };
+
+      const response = await apiClient.validateUnifiedVariant(backendData);
 
       if (response.valid) {
         const updateResponse = await apiClient.updateUnifiedVariant(
-          data.manufacturer,
-          data.type,
-          data.startDate,
-          data.endDate,
-          data.variant,
-          data.manufacturer,
-          data
+          data.manufacturer || '',
+          data.type || '',
+          data.startDate || '',
+          data.endDate || '',
+          data.variant || '',
+          data.manufacturer || '',
+          backendData as any
         );
 
         if (updateResponse.valid) {
@@ -517,6 +653,116 @@ export default function UnifiedCoCAForm() {
               <div className="md:col-span-2">
                 <Label className="text-sm font-medium">Tire Value</Label>
                 <Input {...register('tyreValue')} className="mt-1" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Engine Details (HA003D) */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-red-50 border-b">
+              <CardTitle className="text-xl">Engine Details (HA003D)</CardTitle>
+              <CardDescription>Engine specifications and performance</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Engine Code</Label>
+                <Input {...register('engineCode')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Engine Manufacturer</Label>
+                <Input {...register('engineManufacturer')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Working Principle</Label>
+                <Input {...register('workingPrinciple')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Engine Cycle</Label>
+                <Input {...register('engineCycle')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Engine Ignition Principle</Label>
+                <Input {...register('engineIgnition')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Direct Injection</Label>
+                <Input {...register('directInjection')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">No. and Arrangement of Cylinders</Label>
+                <Input {...register('noArrangementCylinders')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Fuel Type</Label>
+                <Input {...register('fuel')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Engine Capacity (cc)</Label>
+                <Input {...register('capacity')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Max Net Power (ICE) - kW/rpm</Label>
+                <Input {...register('maxNetPower')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Max Hourly Output (Electric) - kW</Label>
+                <Input {...register('maxHourlyOutputElec')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Max Net Power (Electric) - kW</Label>
+                <Input {...register('maxNetPowerElec')} className="mt-1" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Max 30-Minute Power (Electric) - kW</Label>
+                <Input {...register('max30MinPowerElec')} className="mt-1" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Certificate of Conformity (HA003R) */}
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="bg-amber-50 border-b">
+              <CardTitle className="text-xl">Certificate of Conformity (HA003R)</CardTitle>
+              <CardDescription>CoC certificate and vehicle information</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Location and Method of Attachment of VIN Plate</Label>
+                <textarea {...register('vinPlateAttachment')} className="mt-1 p-2 border rounded w-full min-h-24 text-sm" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Location of VIN on Chassis</Label>
+                <textarea {...register('vinPlateLocation')} className="mt-1 p-2 border rounded w-full min-h-24 text-sm" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Type / Commercial Description</Label>
+                <textarea {...register('commercialDescription')} className="mt-1 p-2 border rounded w-full min-h-24 text-sm" />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Remarks</Label>
+                <textarea {...register('remarks')} className="mt-1 p-2 border rounded w-full min-h-24 text-sm" />
+                {fieldErrors.remarks && <ErrorText text={fieldErrors.remarks} />}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium">Additional Technical Information</Label>
+                <textarea {...register('additionalInfo')} className="mt-1 p-2 border rounded w-full min-h-24 text-sm" />
+                {fieldErrors.additionalInfo && <ErrorText text={fieldErrors.additionalInfo} />}
               </div>
             </CardContent>
           </Card>

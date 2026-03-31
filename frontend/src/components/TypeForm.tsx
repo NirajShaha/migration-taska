@@ -12,6 +12,25 @@ export const TypeForm: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Responsive grid styles
+  const gridStyle3Col = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '15px',
+  };
+
+  const gridStyle2Col = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '15px',
+  };
+
+  const gridStyleDateFields = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+    gap: '10px',
+  };
+
   // Lookup form
   const {
     register: registerLookup,
@@ -133,7 +152,7 @@ export const TypeForm: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '700px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
       <h1>📋 WVTA HA003U - Type Approval Management</h1>
 
       {successMessage && (
@@ -154,30 +173,30 @@ export const TypeForm: React.FC = () => {
             <legend style={{ color: '#0056b3', fontWeight: 'bold', padding: '0 10px' }}>🔍 Step 1: Search for Type</legend>
             <p style={{ color: '#666', marginTop: '10px' }}>Enter the type details to retrieve existing approval information before updating</p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
+            <div style={gridStyle3Col}>
               <label>
                 <strong>Model: *</strong>
-                <input {...registerLookup('typModel')} maxLength={1} required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }} placeholder="A" />
+                <input {...registerLookup('typModel')} maxLength={1} required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} placeholder="A" />
               </label>
 
               <label>
                 <strong>Type: *</strong>
-                <input {...registerLookup('typType')} maxLength={4} required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }} placeholder="ABC1" />
+                <input {...registerLookup('typType')} maxLength={4} required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} placeholder="ABC1" />
               </label>
 
               <label>
                 <strong>Start Date: *</strong>
-                <input {...registerLookup('typStartDate')} type="date" required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                <input {...registerLookup('typStartDate')} type="date" required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
               </label>
 
               <label>
                 <strong>End Date: *</strong>
-                <input {...registerLookup('typEndDate')} type="date" required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                <input {...registerLookup('typEndDate')} type="date" required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
               </label>
 
               <label style={{ gridColumn: '1 / -1' }}>
                 <strong>Manufacturer: *</strong>
-                <input {...registerLookup('typManf')} maxLength={1} required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }} placeholder="M" />
+                <input {...registerLookup('typManf')} maxLength={1} required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} placeholder="M" />
               </label>
             </div>
 
@@ -194,26 +213,26 @@ export const TypeForm: React.FC = () => {
 
           <fieldset style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '4px' }}>
             <legend style={{ fontWeight: 'bold' }}>Type Information (Read-only)</legend>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div style={gridStyle3Col}>
               <label>
                 Model:
-                <input {...register('typModel')} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5' }} />
+                <input {...register('typModel')} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5', fontSize: '14px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} />
               </label>
               <label>
                 Type:
-                <input {...register('typType')} maxLength={4} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5' }} />
+                <input {...register('typType')} maxLength={4} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5', fontSize: '14px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} />
               </label>
               <label>
                 Start Date:
-                <input {...register('typStartDate')} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5' }} />
+                <input {...register('typStartDate')} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5', fontSize: '14px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} />
               </label>
               <label>
                 End Date:
-                <input {...register('typEndDate')} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5' }} />
+                <input {...register('typEndDate')} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5', fontSize: '14px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} />
               </label>
               <label style={{ gridColumn: '1 / -1' }}>
                 Manufacturer:
-                <input {...register('typManf')} maxLength={1} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5' }} />
+                <input {...register('typManf')} maxLength={1} disabled style={{ width: '100%', padding: '8px', marginTop: '5px', backgroundColor: '#f5f5f5', fontSize: '14px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' }} />
               </label>
             </div>
           </fieldset>
@@ -221,40 +240,44 @@ export const TypeForm: React.FC = () => {
           <fieldset style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '4px' }}>
             <legend style={{ fontWeight: 'bold' }}>Approval Information</legend>
 
-            <label style={{ display: 'block', marginBottom: '15px' }}>
-              <strong>Approval No.:</strong>
-              <input {...register('typApprovalNo')} maxLength={25} style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }} />
-            </label>
+            <div style={gridStyle2Col}>
+              <label style={{ display: 'block' }}>
+                <strong>Approval No.:</strong>
+                <input {...register('typApprovalNo')} maxLength={25} style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
+              </label>
 
-            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block' }}>
+                <strong>Small Series Type Application:</strong>
+                <input {...register('typSmallSeries')} maxLength={1} style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
+              </label>
+            </div>
+
+            <div style={{ marginTop: '15px' }}>
               <strong>Approval Date (DD/MM/YYYY):</strong>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginTop: '5px' }}>
-                <label>
-                  Day:
-                  <input {...register('typApprDateDay')} type="number" min={1} max={31} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+              <div style={gridStyleDateFields}>
+                <label style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>Day:</span>
+                  <input {...register('typApprDateDay')} type="number" min={1} max={31} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
                 </label>
-                <label>
-                  Month:
-                  <input {...register('typApprDateMonth')} type="number" min={1} max={12} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                <label style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>Month:</span>
+                  <input {...register('typApprDateMonth')} type="number" min={1} max={12} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
                 </label>
-                <label>
-                  Year:
-                  <input {...register('typApprDateYear')} type="number" min={1900} max={2100} style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                <label style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>Year:</span>
+                  <input {...register('typApprDateYear')} type="number" min={1900} max={2100} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
                 </label>
               </div>
             </div>
-
-            <label style={{ display: 'block' }}>
-              <strong>Small Series Type Application:</strong>
-              <input {...register('typSmallSeries')} maxLength={1} style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }} />
-            </label>
           </fieldset>
 
-          <label style={{ marginBottom: '20px', display: 'block' }}>
-            <strong>User ID: *</strong>
-            <input {...register('userId')} required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }} />
-            {errors.userId && <span style={{ color: 'red' }}>{errors.userId.message}</span>}
-          </label>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '10px' }}>
+              <strong>User ID: *</strong>
+              <input {...register('userId')} required style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px', boxSizing: 'border-box' }} />
+            </label>
+            {errors.userId && <span style={{ color: 'red', fontSize: '12px' }}>{errors.userId.message}</span>}
+          </div>
 
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
             <button type="submit" disabled={isLoading} style={{ flex: 1, padding: '12px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}>

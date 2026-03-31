@@ -35,11 +35,27 @@ public class UnifiedCoCARequest {
 
     // ===== TYPE APPROVAL FIELDS =====
     private String typApprovalNo;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate typApprDate;
     private Integer typApprDay;
     private Integer typApprMonth;
     private Integer typApprYear;
     private String typSmallSeries;
+    private String typApprTypeInd;
+    private String typChipData;
+    private String typGenTyrList;
     private String varNewmodActmasInd; // New model for ACTMASS
+    private String varGenTyrList;
+
+    // ===== ENGINE DETAILS FIELDS =====
+    private String varCocEngCode;
+    private String varCocEngMan;
+    private String varCocWrkPrin;
+    private String varCocDirectInj;
+    private String varCocNoArrCyl;
+    private String varCocFuel;
+    private String varCocCap;
+    private String varCocMaxPower;
 
     // ===== TEST METHOD =====
     private String testMethod;
@@ -68,6 +84,13 @@ public class UnifiedCoCARequest {
     private String classOfVehicle;
     private String noConfDoors;
     private String tyreValue;
+
+    // ===== COC CERTIFICATE FIELDS (HA003R) =====
+    private String cocLocAttachment;        // Location and method of attachment of Vin Plate
+    private String cocLocOnChassis;         // Location of Vehicle identification number on Chassis
+    private String cocTypeDescription;      // Type / Commercial Description
+    private String cocRemarks;              // Remarks
+    private String cocAdditionalInfo;       // Additional Information
 
     // ===== SYSTEM FIELDS =====
     private String userId;

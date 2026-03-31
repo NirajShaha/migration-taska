@@ -147,10 +147,15 @@ export const UnifiedFormSchema = z.object({
   approvalDate: z.string()
     .regex(/^\d{2}\/\d{2}\/\d{4}$|^$/, 'Approval date must be DD/MM/YYYY format')
     .optional(),
+  approvalDay: z.string().max(2, 'Day max 2 characters').optional(),
+  approvalMonth: z.string().max(2, 'Month max 2 characters').optional(),
+  approvalYear: z.string().max(4, 'Year max 4 characters').optional(),
   smallSeriesTypApp: z.enum(['Y', 'N', '/']).optional(),
   newModelActmass: z.enum(['Y', 'N']).optional(),
   chartData: z.enum(['Y', 'N']).default('N').optional(),
+  approvalTypeIndicator: z.enum(['A', 'B', 'C']).optional(),
   testMethod: z.string().max(25, 'Test method max 25 characters').optional(),
+  generateTyreList: z.enum(['Y', 'N']).optional(),
 
   // ===== HA003U: AXLES CONFIGURATION =====
   axlesWheels: z.string().max(12, 'Axles/Wheels max 12 characters').optional(),
@@ -193,6 +198,7 @@ export const UnifiedFormSchema = z.object({
   vinPlateLocation: z.string().max(70, 'VIN plate location max 70 characters').optional(),
   commercialDescription: z.string().max(70, 'Commercial description max 70 characters').optional(),
   remarks: z.string().max(375, 'Remarks max 375 characters').optional(),
+  additionalInfo: z.string().max(375, 'Additional info max 375 characters').optional(),
 
   // ===== HA003D: ENGINE SPECIFICATIONS =====
   engineCode: z.string().max(10, 'Engine code max 10 characters').optional(),

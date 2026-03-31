@@ -156,6 +156,26 @@ export default function StepCoCCertificate({ form }: StepCoCCertificateProps) {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="additionalInfo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-slate-300 font-medium">Additional Technical Information</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder="Enter any additional technical information or specifications..."
+                    maxLength={375}
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none h-32 min-h-32"
+                  />
+                </FormControl>
+                <p className="text-xs text-slate-500">Max 375 characters</p>
+                <FormMessage className="text-red-400" />
+              </FormItem>
+            )}
+          />
         </div>
       </div>
     </div>

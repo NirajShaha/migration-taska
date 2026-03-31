@@ -191,6 +191,49 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="approvalTypeIndicator"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-slate-300 font-medium">Approval Type Indicator</FormLabel>
+                <FormControl>
+                  <Select
+                    {...field}
+                    className="bg-slate-700/50 border-slate-600 text-white focus:border-blue-500 focus:ring-blue-500/20"
+                  >
+                    <option value="">Select...</option>
+                    <option value="A">A (Standard Approval)</option>
+                    <option value="B">B (Component Approval)</option>
+                    <option value="C">C (Systems Approval)</option>
+                  </Select>
+                </FormControl>
+                <FormMessage className="text-red-400" />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="generateTyreList"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-slate-300 font-medium">Generate Tyre List</FormLabel>
+                <FormControl>
+                  <Select
+                    {...field}
+                    className="bg-slate-700/50 border-slate-600 text-white focus:border-blue-500 focus:ring-blue-500/20"
+                  >
+                    <option value="">Select...</option>
+                    <option value="Y">Yes</option>
+                    <option value="N">No</option>
+                  </Select>
+                </FormControl>
+                <FormMessage className="text-red-400" />
+              </FormItem>
+            )}
+          />
         </div>
       </div>
 

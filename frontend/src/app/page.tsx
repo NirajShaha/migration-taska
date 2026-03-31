@@ -50,9 +50,84 @@ export default function Home() {
       );
 
       if (response?.valid) {
-        // Store search parameters and response in sessionStorage
+        // Map backend response field names to form field names
+        const mappedData = {
+          // Display fields
+          type: response.typType || '',
+          variant: response.varVariant || '',
+          typeDescription: response.typDescription || '',
+          engine: response.varEngine || '',
+          startDate: response.typStartDate || '',
+          endDate: response.typEndDate || '',
+          manufacturer: response.typManf || '',
+
+          // Type Approval fields
+          approvalNo: response.typApprovalNo || '',
+          approvalDay: response.typApprDay?.toString() || '',
+          approvalMonth: response.typApprMonth?.toString() || '',
+          approvalYear: response.typApprYear?.toString() || '',
+          smallSeriesTypApp: response.typSmallSeries || '',
+          newModelActmass: response.varNewmodActmasInd || '',
+          approvalTypeIndicator: response.typApprTypeInd || '',
+          generateTyreList: response.typGenTyrList || response.varGenTyrList || '',
+          chartData: response.varChipData || 'N',
+          testMethod: response.testMethod?.trim() || '',
+
+          // Axles Configuration
+          axlesWheels: response.axlesWheels || '',
+          wheelbase: response.wheelbase || '',
+          posAxlesWithTwinWheels: response.posAxlesWithTwinWheels || '',
+          steeredAxles: response.steeredAxles || '',
+          poweredAxles: response.poweredAxles || '',
+
+          // Position & Interconnection
+          position: response.position || '',
+          interconnection: response.interconnection || '',
+
+          // Dimensions
+          length: response.length || '',
+          lengthWithTowbar: response.lengthWithTowbar || '',
+          width: response.width || '',
+          height: response.height || '',
+          rearOverhang: response.rearOverhang || '',
+          track: response.track || '',
+
+          // Body Classification
+          typeOfBody: response.typeOfBody || '',
+          classOfVehicle: response.classOfVehicle || '',
+          noConfDoors: response.noConfDoors || '',
+          tyreValue: response.tyreValue || '',
+
+          // Engine Details (from varCoc* fields)
+          engineCode: response.varCocEngCode || '',
+          engineManufacturer: response.varCocEngMan || '',
+          workingPrinciple: response.varCocWrkPrin || '',
+          engineCycle: response.varCocWrkPrin || '',
+          engineIgnition: '',
+          directInjection: response.varCocDirectInj?.trim() || '',
+          noArrangementCylinders: response.varCocNoArrCyl || '',
+          fuel: response.varCocFuel || '',
+          capacity: response.varCocCap || '',
+          maxNetPower: response.varCocMaxPower || '',
+          maxHourlyOutputElec: '',
+          maxNetPowerElec: '',
+          max30MinPowerElec: '',
+
+          // Certificate (from coc* fields)
+          vinPlateAttachment: response.cocLocAttachment || '',
+          vinPlateLocation: response.cocLocOnChassis || '',
+          commercialDescription: response.cocTypeDescription || '',
+          remarks: response.cocRemarks || '',
+          additionalInfo: response.cocAdditionalInfo || '',
+
+          // System
+          userId: response.lastUpdatedBy || 'USER001',
+          pageNo: '01',
+        };
+
+        // Store search parameters and mapped response in sessionStorage
         sessionStorage.setItem('searchParams', JSON.stringify(formData));
-        sessionStorage.setItem('variantData', JSON.stringify(response));
+        sessionStorage.setItem('variantData', JSON.stringify(mappedData));
         
         // Redirect to multi-step form
         router.push('/form/variant-update');

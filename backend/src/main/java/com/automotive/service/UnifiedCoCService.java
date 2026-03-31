@@ -8,9 +8,12 @@ import com.automotive.entity.HatVacVariant;
 import com.automotive.entity.HatVacVariantPK;
 import com.automotive.entity.HatTypType;
 import com.automotive.entity.HatTypTypePK;
+import com.automotive.entity.HatCocType;
+import com.automotive.entity.HatCocTypePK;
 import com.automotive.repository.HatVarVariantRepository;
 import com.automotive.repository.HatVacVariantRepository;
 import com.automotive.repository.HatTypTypeRepository;
+import com.automotive.repository.HatCocTypeRepository;
 import com.automotive.validator.CoCFieldValidator;
 import com.automotive.validator.CoCFieldValidator.ValidationResult;
 import com.automotive.exception.ResourceNotFoundException;
@@ -42,6 +45,9 @@ public class UnifiedCoCService {
 
     @Autowired
     private HatTypTypeRepository hatTypTypeRepository;
+
+    @Autowired
+    private HatCocTypeRepository hatCocTypeRepository;
 
     /**
      * Lookup variant data to populate the form
@@ -83,12 +89,27 @@ public class UnifiedCoCService {
                 .typDescription(type_data.getTypDescription())
                 .typApprovalNo(type_data.getTypApprovalNo())
                 .typSmallSeries(type_data.getTypSmallSeries())
+                .typApprTypeInd(type_data.getTypApprTypeInd())
+                .typChipData(type_data.getTypChipData())
+                .typGenTyrList(type_data.getTypGenTyrList())
+                .typApprDate(type_data.getTypApprDate())
 
                 // Variant data
                 .varVariant(variant)
                 .varEngine(variant_data.getVarEngine())
                 .varChipData(variant_data.getVarChipData())
                 .varNewmodActmasInd(variant_data.getVarNewmodActmasInd())
+                .varGenTyrList(variant_data.getVarGenTyrList())
+                
+                // Engine details (from VAR_COC_* fields)
+                .varCocEngCode(variant_data.getVarCocEngCode())
+                .varCocEngMan(variant_data.getVarCocEngMan())
+                .varCocWrkPrin(variant_data.getVarCocWrkPrin())
+                .varCocDirectInj(variant_data.getVarCocDirectInj())
+                .varCocNoArrCyl(variant_data.getVarCocNoArrCyl())
+                .varCocFuel(variant_data.getVarCocFuel())
+                .varCocCap(variant_data.getVarCocCap())
+                .varCocMaxPower(variant_data.getVarCocMaxPower())
                 .testMethod(variant_data.getVarCocAnnex())
 
                 // Metadata
@@ -98,27 +119,31 @@ public class UnifiedCoCService {
                 .errors(new ArrayList<>())
                 .build();
 
+        // Split approval date into day/month/year
+        if (type_data.getTypApprDate() != null) {
+            response.setTypApprDay(type_data.getTypApprDate().getDayOfMonth());
+            response.setTypApprMonth(type_data.getTypApprDate().getMonthValue());
+            response.setTypApprYear(type_data.getTypApprDate().getYear());
+        }
+
         // Lookup VAC (dimensional) data
         loadVACFields(response, model, type, startDate, endDate, variant, manf);
+
+        // Lookup CoC (certificate) data
+        loadCoCFields(response, model, type, startDate, endDate, manf);
 
         return response;
     }
 
     /**
      * Load dimensional fields from hat_vac_variant table
+     * Uses repository method to avoid loading all records at once
      */
     private void loadVACFields(UnifiedCoCAResponse response, String model, String type,
                                LocalDate startDate, LocalDate endDate, String variant, String manf) {
-        // Get all VAC records for this variant
-        List<HatVacVariant> vacRecords = hatVacVariantRepository.findAll()
-                .stream()
-                .filter(v -> v.getId().getVacModel().equals(model)
-                        && v.getId().getVacType().equals(type)
-                        && v.getId().getVacStartDate().equals(startDate)
-                        && v.getId().getVacEndDate().equals(endDate)
-                        && v.getId().getVacVariant().equals(variant)
-                        && v.getId().getVacManf().equals(manf))
-                .toList();
+        // Use repository method for efficient database query
+        List<HatVacVariant> vacRecords = hatVacVariantRepository.findByIdVacModelAndIdVacTypeAndIdVacStartDateAndIdVacEndDateAndIdVacVariantAndIdVacManf(
+                model, type, startDate, endDate, variant, manf);
 
         // Map VAC values to response fields based on field_no
         vacRecords.forEach(vac -> {
@@ -148,7 +173,36 @@ public class UnifiedCoCService {
     }
 
     /**
+     * Load CoC certificate fields from hat_coc_type table
+     * These are stored with field_no and sub_field keys for different screen sections
+     * Uses repository method to avoid loading all records at once
+     */
+    private void loadCoCFields(UnifiedCoCAResponse response, String model, String type,
+                               LocalDate startDate, LocalDate endDate, String manf) {
+        // Use repository method for efficient database query
+        List<HatCocType> cocRecords = hatCocTypeRepository.findByIdCocModelAndIdCocTypeAndIdCocStartDateAndIdCocEndDateAndIdCocManf(
+                model, type, startDate, endDate, manf);
+
+        // Map CoC values to response fields based on field_no
+        // Field mappings are based on the HAT_COC_TYPE table structure from HA003R screen
+        cocRecords.forEach(coc -> {
+            String fieldNo = coc.getId().getCocFieldNo();
+            String value = coc.getCocValue();
+
+            // Map fields to HA003R (CoC Certificate) screen fields
+            switch (fieldNo) {
+                case "01" -> response.setCocLocAttachment(value);           // Location and method of attachment of Vin Plate
+                case "02" -> response.setCocLocOnChassis(value);           // Location of Vehicle identification number on Chassis
+                case "03" -> response.setCocTypeDescription(value);        // Type / Commercial Description
+                case "04" -> response.setCocRemarks(value);                // Remarks
+                case "05" -> response.setCocAdditionalInfo(value);         // Additional Information
+            }
+        });
+    }
+
+    /**
      * Validate all fields in the request
+     * Checks constraints for dimensions, emissions, and vehicle specifications
      */
     public List<UnifiedCoCAResponse.FieldError> validateFields(UnifiedCoCARequest request) {
         List<UnifiedCoCAResponse.FieldError> errors = new ArrayList<>();
@@ -302,6 +356,33 @@ public class UnifiedCoCService {
         variant.setVarCocAnnex(request.getTestMethod());
         variant.setVarChipData(request.getVarChipData());
         variant.setVarNewmodActmasInd(request.getVarNewmodActmasInd());
+        
+        // Engine details fields
+        if (request.getVarCocEngCode() != null) {
+            variant.setVarCocEngCode(request.getVarCocEngCode());
+        }
+        if (request.getVarCocEngMan() != null) {
+            variant.setVarCocEngMan(request.getVarCocEngMan());
+        }
+        if (request.getVarCocWrkPrin() != null) {
+            variant.setVarCocWrkPrin(request.getVarCocWrkPrin());
+        }
+        if (request.getVarCocDirectInj() != null) {
+            variant.setVarCocDirectInj(request.getVarCocDirectInj());
+        }
+        if (request.getVarCocNoArrCyl() != null) {
+            variant.setVarCocNoArrCyl(request.getVarCocNoArrCyl());
+        }
+        if (request.getVarCocFuel() != null) {
+            variant.setVarCocFuel(request.getVarCocFuel());
+        }
+        if (request.getVarCocCap() != null) {
+            variant.setVarCocCap(request.getVarCocCap());
+        }
+        if (request.getVarCocMaxPower() != null) {
+            variant.setVarCocMaxPower(request.getVarCocMaxPower());
+        }
+        
         variant.setVarUserid(request.getUserId() != null ? request.getUserId() : "SYSTEM");
         variant.setVarTimestamp(LocalDateTime.now());
 
@@ -309,6 +390,9 @@ public class UnifiedCoCService {
 
         // Update or create VAC records for dimensional data
         updateVACFields(request);
+
+        // Update or create CoC records for certificate data
+        updateCoCFields(request);
 
         // Update type approval if provided
         if (request.getTypApprovalNo() != null || request.getTypApprDay() != null) {
@@ -397,7 +481,67 @@ public class UnifiedCoCService {
     }
 
     /**
-     * Update type approval date and number
+     * Update CoC (certificate) fields
+     * These are stored in hat_coc_type table with field_no and sub_field keys
+     */
+    @Transactional
+    private void updateCoCFields(UnifiedCoCARequest request) {
+        String model = request.getTypModel();
+        String type = request.getTypType();
+        LocalDate startDate = request.getTypStartDate();
+        LocalDate endDate = request.getTypEndDate();
+        String manf = request.getTypManf();
+
+        // Update CoC certificate fields with field-specific field_no values
+        updateCoCField(model, type, startDate, endDate, manf, "01", "1", request.getCocLocAttachment(), request.getUserId());      // Location and method of attachment
+        updateCoCField(model, type, startDate, endDate, manf, "02", "1", request.getCocLocOnChassis(), request.getUserId());       // Location on Chassis
+        updateCoCField(model, type, startDate, endDate, manf, "03", "1", request.getCocTypeDescription(), request.getUserId());    // Type/Commercial Description
+        updateCoCField(model, type, startDate, endDate, manf, "04", "1", request.getCocRemarks(), request.getUserId());            // Remarks
+        updateCoCField(model, type, startDate, endDate, manf, "05", "1", request.getCocAdditionalInfo(), request.getUserId());     // Additional Information
+    }
+
+    /**
+     * Update or create individual CoC field
+     */
+    private void updateCoCField(String model, String type, LocalDate startDate, LocalDate endDate,
+                               String manf, String fieldNo, String subField,
+                               String value, String userId) {
+        if (value == null || value.isBlank()) {
+            return; // Skip empty values
+        }
+
+        // Create composite key for CoC record
+        // HatCocTypePK order: model, type, startDate, endDate, manf, fieldNo, subField, country
+        HatCocTypePK pk = new HatCocTypePK(model, type, startDate, endDate, manf, fieldNo, subField, "01");
+
+        // Look up existing CoC record
+        Optional<HatCocType> cocOpt = hatCocTypeRepository.findById(pk);
+
+        HatCocType coc;
+        if (cocOpt.isPresent()) {
+            // Update existing record
+            coc = cocOpt.get();
+            coc.setCocValue(value);
+            log.debug("Updating CoC field {}.{} to {}", fieldNo, subField, value);
+        } else {
+            // Create new record
+            coc = new HatCocType();
+            coc.setId(pk);
+            coc.setCocValue(value);
+            log.debug("Creating new CoC field {}.{} with value {}", fieldNo, subField, value);
+        }
+
+        // Set system fields
+        coc.setCocUserid(userId != null ? userId : "SYSTEM");
+        coc.setCocTimestamp(LocalDateTime.now());
+
+        // Persist to database
+        hatCocTypeRepository.save(coc);
+    }
+
+    /**
+     * Update type approval date, number, and related fields
+     * Splits day/month/year into LocalDate for storage
      */
     private void updateTypeApproval(UnifiedCoCARequest request) {
         HatTypTypePK typePk = new HatTypTypePK(
@@ -417,6 +561,26 @@ public class UnifiedCoCService {
             if (request.getTypSmallSeries() != null) {
                 type.setTypSmallSeries(request.getTypSmallSeries());
             }
+            if (request.getTypApprTypeInd() != null) {
+                type.setTypApprTypeInd(request.getTypApprTypeInd());
+            }
+            if (request.getTypChipData() != null) {
+                type.setTypChipData(request.getTypChipData());
+            }
+            if (request.getTypGenTyrList() != null) {
+                type.setTypGenTyrList(request.getTypGenTyrList());
+            }
+            
+            // Build approval date from day, month, year if provided
+            if (request.getTypApprDay() != null && request.getTypApprMonth() != null && request.getTypApprYear() != null) {
+                try {
+                    LocalDate apprDate = LocalDate.of(request.getTypApprYear(), request.getTypApprMonth(), request.getTypApprDay());
+                    type.setTypApprDate(apprDate);
+                } catch (Exception e) {
+                    log.warn("Invalid approval date: {}/{}/{}", request.getTypApprDay(), request.getTypApprMonth(), request.getTypApprYear());
+                }
+            }
+            
             type.setTypUserid(request.getUserId() != null ? request.getUserId() : "SYSTEM");
             type.setTypTimestamp(LocalDateTime.now());
             hatTypTypeRepository.save(type);
