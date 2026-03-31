@@ -16,7 +16,7 @@ interface StepEngineDetailsProps {
 
 export default function StepEngineDetails({ form }: StepEngineDetailsProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-visible">
       <div>
         <h2 className="text-2xl font-bold text-white mb-2">Engine & Technical Specifications</h2>
         <p className="text-slate-400">

@@ -29,7 +29,6 @@ const SAMPLE_VARIANT = {
   startDate: '2024-01-01',
   endDate: '2024-12-31',
   manufacturer: 'L',
-  chartData: 'N' as const,
   approvalNo: 'HA2024-001',
   approvalDay: '15',
   approvalMonth: '6',
@@ -145,7 +144,6 @@ export default function UnifiedCoCAForm() {
         setValue('approvalTypeIndicator', (response.typApprTypeInd as 'A' | 'B' | 'C' | undefined) || '');
         setValue('generateTyreList', (response.typGenTyrList as 'Y' | 'N' | undefined) || '');
         setValue('testMethod', response.testMethod?.trim() || '');
-        setValue('chartData', (response.varChipData as 'Y' | 'N' | undefined) || 'N');
 
         // Axles Configuration fields
         setValue('axlesWheels', response.axlesWheels || '');
@@ -231,7 +229,6 @@ export default function UnifiedCoCAForm() {
         // Variant Identification
         varVariant: data.variant,
         varEngine: data.engine,
-        varChipData: data.chartData,
 
         // Type Approval
         typApprovalNo: data.approvalNo,
@@ -240,7 +237,6 @@ export default function UnifiedCoCAForm() {
         typApprYear: data.approvalYear ? parseInt(data.approvalYear) : undefined,
         typSmallSeries: data.smallSeriesTypApp,
         typApprTypeInd: data.approvalTypeIndicator,
-        typChipData: data.chartData,
         typGenTyrList: data.generateTyreList,
         varNewmodActmasInd: data.newModelActmass,
         varGenTyrList: data.generateTyreList,
@@ -315,7 +311,8 @@ export default function UnifiedCoCAForm() {
             reset();
           }, 3000);
         } else {
-          setError('Failed to update variant');
+          const backendMessage = updateResponse?.errors?.[0]?.errorMessage || 'Failed to update variant';
+          setError(backendMessage);
         }
       } else if (response.errors && response.errors.length > 0) {
         const errors: FormFieldError = {};
@@ -437,10 +434,10 @@ export default function UnifiedCoCAForm() {
         )}
 
         {successMessage && (
-          <Alert variant="success" className="mb-6 animate-slideDown">
-            <CheckCircle2 className="h-4 w-4" />
-            <AlertTitle>Success</AlertTitle>
-            <AlertDescription>{successMessage}</AlertDescription>
+          <Alert className="mb-6 border-green-500/50 bg-green-500/10 animate-slideDown">
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <AlertTitle className="text-green-200">Success</AlertTitle>
+            <AlertDescription className="text-green-100">{successMessage}</AlertDescription>
           </Alert>
         )}
 

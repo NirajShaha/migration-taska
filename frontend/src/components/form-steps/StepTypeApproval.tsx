@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
+import { NativeSelect } from '@/components/ui/native-select';
 import { UnifiedFormData } from '@/lib/schemas';
 
 interface StepTypeApprovalProps {
@@ -16,7 +16,7 @@ interface StepTypeApprovalProps {
 
 export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-visible">
       <div>
         <h2 className="text-2xl font-bold text-white mb-2">Type Approval Information</h2>
         <p className="text-slate-400">
@@ -268,7 +268,7 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
               <FormItem>
                 <FormLabel className="text-slate-300">Small Series Type App.</FormLabel>
                 <FormControl>
-                  <Select
+                  <NativeSelect
                     {...field}
                     className="bg-slate-700/50 border-slate-600/50 text-white"
                   >
@@ -276,7 +276,7 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
                     <option value="Y">Yes (Y)</option>
                     <option value="N">No (N)</option>
                     <option value="/">Not Applicable (/)</option>
-                  </Select>
+                  </NativeSelect>
                 </FormControl>
                 <FormMessage className="text-red-400" />
               </FormItem>
@@ -290,14 +290,14 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
               <FormItem>
                 <FormLabel className="text-slate-300">New Model Actual Mass</FormLabel>
                 <FormControl>
-                  <Select
+                  <NativeSelect
                     {...field}
                     className="bg-slate-700/50 border-slate-600/50 text-white"
                   >
                     <option value="">Select</option>
                     <option value="Y">Yes (Y)</option>
                     <option value="N">No (N)</option>
-                  </Select>
+                  </NativeSelect>
                 </FormControl>
                 <FormMessage className="text-red-400" />
               </FormItem>
@@ -311,14 +311,14 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
               <FormItem>
                 <FormLabel className="text-slate-300">Chip Data</FormLabel>
                 <FormControl>
-                  <Select
+                  <NativeSelect
                     {...field}
                     className="bg-slate-700/50 border-slate-600/50 text-white"
                   >
                     <option value="">Select</option>
                     <option value="Y">Yes (Y)</option>
                     <option value="N">No (N)</option>
-                  </Select>
+                  </NativeSelect>
                 </FormControl>
                 <FormMessage className="text-red-400" />
               </FormItem>
@@ -351,7 +351,7 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
               <FormItem>
                 <FormLabel className="text-slate-300">Approval Type Indicator</FormLabel>
                 <FormControl>
-                  <Select
+                  <NativeSelect
                     {...field}
                     className="bg-slate-700/50 border-slate-600/50 text-white"
                   >
@@ -359,7 +359,7 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
                     <option value="A">A - Type</option>
                     <option value="B">B - Individual</option>
                     <option value="C">C - Small Series</option>
-                  </Select>
+                  </NativeSelect>
                 </FormControl>
                 <FormMessage className="text-red-400" />
               </FormItem>
@@ -373,14 +373,14 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
               <FormItem>
                 <FormLabel className="text-slate-300">Generate Tyre List</FormLabel>
                 <FormControl>
-                  <Select
+                  <NativeSelect
                     {...field}
                     className="bg-slate-700/50 border-slate-600/50 text-white"
                   >
                     <option value="">Select</option>
                     <option value="Y">Yes (Y)</option>
                     <option value="N">No (N)</option>
-                  </Select>
+                  </NativeSelect>
                 </FormControl>
                 <FormMessage className="text-red-400" />
               </FormItem>
@@ -439,7 +439,7 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
               <FormItem>
                 <FormLabel className="text-slate-300">Class of Vehicle</FormLabel>
                 <FormControl>
-                  <Select
+                  <NativeSelect
                     {...field}
                     className="bg-slate-700/50 border-slate-600/50 text-white"
                   >
@@ -451,7 +451,7 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
                     <option value="A">A</option>
                     <option value="B">B</option>
                     <option value="C">C</option>
-                  </Select>
+                  </NativeSelect>
                 </FormControl>
                 <FormMessage className="text-red-400" />
               </FormItem>
@@ -529,14 +529,14 @@ export default function StepTypeApproval({ form }: StepTypeApprovalProps) {
               <FormItem>
                 <FormLabel className="text-slate-300">Powered Axles</FormLabel>
                 <FormControl>
-                  <Select
+                  <NativeSelect
                     {...field}
                     className="bg-slate-700/50 border-slate-600/50 text-white"
                   >
                     <option value="">Select</option>
                     <option value="H">H</option>
                     <option value="N">N</option>
-                  </Select>
+                  </NativeSelect>
                 </FormControl>
                 <FormMessage className="text-red-400" />
               </FormItem>

@@ -1,5 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { AuthSessionProvider } from '@/components/AuthSessionProvider';
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: 'WVTA CoC Management System',
@@ -12,8 +18,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={cn("font-sans", geist.variable)}>
+      <AuthSessionProvider>
+        <TooltipProvider>
+          <body>{children}</body>
+        </TooltipProvider>
+      </AuthSessionProvider>
     </html>
   );
 }
